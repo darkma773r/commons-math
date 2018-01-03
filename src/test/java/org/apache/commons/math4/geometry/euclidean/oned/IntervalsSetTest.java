@@ -54,8 +54,35 @@ public class IntervalsSetTest {
 
         List<Interval> intervals = set.asList();
         Assert.assertEquals(1, intervals.size());
-        Assert.assertEquals(Double.NEGATIVE_INFINITY, intervals.get(0).getInf(), TEST_TOLERANCE);
-        Assert.assertEquals(Double.POSITIVE_INFINITY, intervals.get(0).getSup(), TEST_TOLERANCE);
+        assertInterval(Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, intervals.get(0), TEST_TOLERANCE);
+
+        assertLocation(Region.Location.INSIDE, set, Double.NEGATIVE_INFINITY);
+        assertLocation(Region.Location.INSIDE, set, 0.0);
+        assertLocation(Region.Location.INSIDE, set, Double.POSITIVE_INFINITY);
+    }
+
+    @Test
+    public void testInterval_doubleOpenInterval() {
+        // act
+        IntervalsSet set = new IntervalsSet(Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, TEST_TOLERANCE);
+
+        // assert
+        Assert.assertEquals(TEST_TOLERANCE, set.getTolerance(), Precision.SAFE_MIN);
+        Assert.assertEquals(Double.NEGATIVE_INFINITY, set.getInf(), TEST_TOLERANCE);
+        Assert.assertEquals(Double.POSITIVE_INFINITY, set.getSup(), TEST_TOLERANCE);
+        Assert.assertEquals(Double.POSITIVE_INFINITY, set.getSize(), TEST_TOLERANCE);
+        Assert.assertEquals(0.0, set.getBoundarySize(), TEST_TOLERANCE);
+        GeometryTestUtils.assertVectorEquals(Cartesian1D.NaN, (Cartesian1D) set.getBarycenter(), TEST_TOLERANCE);
+
+        BSPTree<Euclidean1D> tree = set.getTree(true);
+        Assert.assertEquals(Boolean.TRUE, tree.getAttribute());
+        Assert.assertNull(tree.getCut());
+        Assert.assertNull(tree.getMinus());
+        Assert.assertNull(tree.getPlus());
+
+        List<Interval> intervals = set.asList();
+        Assert.assertEquals(1, intervals.size());
+        assertInterval(Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, intervals.get(0), TEST_TOLERANCE);
 
         assertLocation(Region.Location.INSIDE, set, Double.NEGATIVE_INFINITY);
         assertLocation(Region.Location.INSIDE, set, 0.0);
@@ -77,8 +104,7 @@ public class IntervalsSetTest {
 
         List<Interval> intervals = set.asList();
         Assert.assertEquals(1, intervals.size());
-        Assert.assertEquals(9.0, intervals.get(0).getInf(), TEST_TOLERANCE);
-        Assert.assertEquals(Double.POSITIVE_INFINITY, intervals.get(0).getSup(), TEST_TOLERANCE);
+        assertInterval(9.0, Double.POSITIVE_INFINITY, intervals.get(0), TEST_TOLERANCE);
 
         assertLocation(Region.Location.OUTSIDE, set, Double.NEGATIVE_INFINITY);
         assertLocation(Region.Location.OUTSIDE, set, 0.0);
@@ -103,8 +129,7 @@ public class IntervalsSetTest {
 
         List<Interval> intervals = set.asList();
         Assert.assertEquals(1, intervals.size());
-        Assert.assertEquals(Double.NEGATIVE_INFINITY, intervals.get(0).getInf(), TEST_TOLERANCE);
-        Assert.assertEquals(9.0, intervals.get(0).getSup(), TEST_TOLERANCE);
+        assertInterval(Double.NEGATIVE_INFINITY, 9.0, intervals.get(0), TEST_TOLERANCE);
 
         assertLocation(Region.Location.INSIDE, set, Double.NEGATIVE_INFINITY);
         assertLocation(Region.Location.INSIDE, set, 0.0);
@@ -129,8 +154,7 @@ public class IntervalsSetTest {
 
         List<Interval> intervals = set.asList();
         Assert.assertEquals(1, intervals.size());
-        Assert.assertEquals(-1.0, intervals.get(0).getInf(), TEST_TOLERANCE);
-        Assert.assertEquals(9.0, intervals.get(0).getSup(), TEST_TOLERANCE);
+        assertInterval(-1.0, 9.0, intervals.get(0), TEST_TOLERANCE);
 
         assertLocation(Region.Location.OUTSIDE, set, Double.NEGATIVE_INFINITY);
         assertLocation(Region.Location.OUTSIDE, set, -2.0);
@@ -138,6 +162,30 @@ public class IntervalsSetTest {
         assertLocation(Region.Location.BOUNDARY, set, 9.0 - 1e-16);
         assertLocation(Region.Location.BOUNDARY, set, 9.0 + 1e-16);
         assertLocation(Region.Location.OUTSIDE, set, 10.0);
+        assertLocation(Region.Location.OUTSIDE, set, Double.POSITIVE_INFINITY);
+    }
+
+    @Test
+    public void testInterval_singlePoint() {
+        // act
+        IntervalsSet set = new IntervalsSet(1.0, 1.0, TEST_TOLERANCE);
+
+        // assert
+        Assert.assertEquals(TEST_TOLERANCE, set.getTolerance(), Precision.SAFE_MIN);
+        Assert.assertEquals(1.0, set.getInf(), TEST_TOLERANCE);
+        Assert.assertEquals(1.0, set.getSup(), TEST_TOLERANCE);
+        Assert.assertEquals(0.0, set.getSize(), TEST_TOLERANCE);
+        Assert.assertEquals(0.0, set.getBoundarySize(), TEST_TOLERANCE);
+        GeometryTestUtils.assertVectorEquals(new Cartesian1D(1.0), (Cartesian1D) set.getBarycenter(), TEST_TOLERANCE);
+
+        List<Interval> intervals = set.asList();
+        Assert.assertEquals(1, intervals.size());
+        assertInterval(1.0, 1.0, intervals.get(0), TEST_TOLERANCE);
+
+        assertLocation(Region.Location.OUTSIDE, set, Double.NEGATIVE_INFINITY);
+        assertLocation(Region.Location.OUTSIDE, set, 0.0);
+        assertLocation(Region.Location.BOUNDARY, set, 1.0);
+        assertLocation(Region.Location.OUTSIDE, set, 2.0);
         assertLocation(Region.Location.OUTSIDE, set, Double.POSITIVE_INFINITY);
     }
 
@@ -165,8 +213,7 @@ public class IntervalsSetTest {
 
         List<Interval> intervals = set.asList();
         Assert.assertEquals(1, intervals.size());
-        Assert.assertEquals(Double.NEGATIVE_INFINITY, intervals.get(0).getInf(), TEST_TOLERANCE);
-        Assert.assertEquals(Double.POSITIVE_INFINITY, intervals.get(0).getSup(), TEST_TOLERANCE);
+        assertInterval(Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, intervals.get(0), TEST_TOLERANCE);
 
         assertLocation(Region.Location.INSIDE, set, Double.NEGATIVE_INFINITY);
         assertLocation(Region.Location.INSIDE, set, 0.0);
@@ -177,8 +224,7 @@ public class IntervalsSetTest {
     public void testFromBoundaries_openInterval_positive() {
         // arrange
         List<SubHyperplane<Euclidean1D>> boundaries = new ArrayList<>();
-        boundaries.add(new SubOrientedPoint(
-                new OrientedPoint(new Cartesian1D(9.0), false, TEST_TOLERANCE), null));
+        boundaries.add(subOrientedPoint(9.0, false));
 
         // act
         IntervalsSet set = new IntervalsSet(boundaries, TEST_TOLERANCE);
@@ -193,8 +239,7 @@ public class IntervalsSetTest {
 
         List<Interval> intervals = set.asList();
         Assert.assertEquals(1, intervals.size());
-        Assert.assertEquals(9.0, intervals.get(0).getInf(), TEST_TOLERANCE);
-        Assert.assertEquals(Double.POSITIVE_INFINITY, intervals.get(0).getSup(), TEST_TOLERANCE);
+        assertInterval(9.0, Double.POSITIVE_INFINITY, intervals.get(0), TEST_TOLERANCE);
 
         assertLocation(Region.Location.OUTSIDE, set, Double.NEGATIVE_INFINITY);
         assertLocation(Region.Location.OUTSIDE, set, 0.0);
@@ -208,8 +253,7 @@ public class IntervalsSetTest {
     public void testFromBoundaries_openInterval_negative() {
         // arrange
         List<SubHyperplane<Euclidean1D>> boundaries = new ArrayList<>();
-        boundaries.add(new SubOrientedPoint(
-                new OrientedPoint(new Cartesian1D(9.0), true, TEST_TOLERANCE), null));
+        boundaries.add(subOrientedPoint(9.0, true));
 
         // act
         IntervalsSet set = new IntervalsSet(boundaries, TEST_TOLERANCE);
@@ -224,8 +268,7 @@ public class IntervalsSetTest {
 
         List<Interval> intervals = set.asList();
         Assert.assertEquals(1, intervals.size());
-        Assert.assertEquals(Double.NEGATIVE_INFINITY, intervals.get(0).getInf(), TEST_TOLERANCE);
-        Assert.assertEquals(9.0, intervals.get(0).getSup(), TEST_TOLERANCE);
+        assertInterval(Double.NEGATIVE_INFINITY, 9.0, intervals.get(0), TEST_TOLERANCE);
 
         assertLocation(Region.Location.INSIDE, set, Double.NEGATIVE_INFINITY);
         assertLocation(Region.Location.INSIDE, set, 0.0);
@@ -239,10 +282,8 @@ public class IntervalsSetTest {
     public void testFromBoundaries_singleClosedInterval() {
         // arrange
         List<SubHyperplane<Euclidean1D>> boundaries = new ArrayList<>();
-        boundaries.add(new SubOrientedPoint(
-                new OrientedPoint(new Cartesian1D(-1.0), false, TEST_TOLERANCE), null));
-        boundaries.add(new SubOrientedPoint(
-                new OrientedPoint(new Cartesian1D(9.0), true, TEST_TOLERANCE), null));
+        boundaries.add(subOrientedPoint(-1.0, false));
+        boundaries.add(subOrientedPoint(9.0, true));
 
         // act
         IntervalsSet set = new IntervalsSet(boundaries, TEST_TOLERANCE);
@@ -257,8 +298,7 @@ public class IntervalsSetTest {
 
         List<Interval> intervals = set.asList();
         Assert.assertEquals(1, intervals.size());
-        Assert.assertEquals(-1.0, intervals.get(0).getInf(), TEST_TOLERANCE);
-        Assert.assertEquals(9.0, intervals.get(0).getSup(), TEST_TOLERANCE);
+        assertInterval(-1.0, 9.0, intervals.get(0), TEST_TOLERANCE);
 
         assertLocation(Region.Location.OUTSIDE, set, Double.NEGATIVE_INFINITY);
         assertLocation(Region.Location.OUTSIDE, set, -2.0);
@@ -267,6 +307,111 @@ public class IntervalsSetTest {
         assertLocation(Region.Location.BOUNDARY, set, 9.0 + 1e-16);
         assertLocation(Region.Location.OUTSIDE, set, 10.0);
         assertLocation(Region.Location.OUTSIDE, set, Double.POSITIVE_INFINITY);
+    }
+
+    @Test
+    public void testFromBoundaries_multipleClosedIntervals() {
+        // arrange
+        List<SubHyperplane<Euclidean1D>> boundaries = new ArrayList<>();
+        boundaries.add(subOrientedPoint(-1.0, false));
+        boundaries.add(subOrientedPoint(2.0, true));
+        boundaries.add(subOrientedPoint(5.0, false));
+        boundaries.add(subOrientedPoint(9.0, true));
+
+        // act
+        IntervalsSet set = new IntervalsSet(boundaries, TEST_TOLERANCE);
+
+        // assert
+        Assert.assertEquals(TEST_TOLERANCE, set.getTolerance(), Precision.SAFE_MIN);
+        Assert.assertEquals(-1.0, set.getInf(), TEST_TOLERANCE);
+        Assert.assertEquals(9.0, set.getSup(), TEST_TOLERANCE);
+        Assert.assertEquals(7.0, set.getSize(), TEST_TOLERANCE);
+        Assert.assertEquals(0.0, set.getBoundarySize(), TEST_TOLERANCE);
+        GeometryTestUtils.assertVectorEquals(new Cartesian1D(29.5 / 7.0), (Cartesian1D) set.getBarycenter(), TEST_TOLERANCE);
+
+        List<Interval> intervals = set.asList();
+        Assert.assertEquals(2, intervals.size());
+        assertInterval(-1.0, 2.0, intervals.get(0), TEST_TOLERANCE);
+        assertInterval(5.0, 9.0, intervals.get(1), TEST_TOLERANCE);
+
+        assertLocation(Region.Location.OUTSIDE, set, Double.NEGATIVE_INFINITY);
+        assertLocation(Region.Location.OUTSIDE, set, -2.0);
+        assertLocation(Region.Location.INSIDE, set, 0.0);
+        assertLocation(Region.Location.OUTSIDE, set, 3.0);
+        assertLocation(Region.Location.INSIDE, set, 6.0);
+        assertLocation(Region.Location.BOUNDARY, set, 9.0 - 1e-16);
+        assertLocation(Region.Location.BOUNDARY, set, 9.0 + 1e-16);
+        assertLocation(Region.Location.OUTSIDE, set, 10.0);
+        assertLocation(Region.Location.OUTSIDE, set, Double.POSITIVE_INFINITY);
+    }
+
+    @Test
+    public void testFromBoundaries_mixedOpenAndClosedIntervals() {
+        // arrange
+        List<SubHyperplane<Euclidean1D>> boundaries = new ArrayList<>();
+        boundaries.add(subOrientedPoint(-2.0, true));
+        boundaries.add(subOrientedPoint(-1.0, false));
+        boundaries.add(subOrientedPoint(2.0, true));
+        boundaries.add(subOrientedPoint(5.0, false));
+        boundaries.add(subOrientedPoint(9.0, true));
+        boundaries.add(subOrientedPoint(10.0, false));
+
+        // act
+        IntervalsSet set = new IntervalsSet(boundaries, TEST_TOLERANCE);
+
+        // assert
+        Assert.assertEquals(TEST_TOLERANCE, set.getTolerance(), Precision.SAFE_MIN);
+        Assert.assertEquals(Double.NEGATIVE_INFINITY, set.getInf(), TEST_TOLERANCE);
+        Assert.assertEquals(Double.POSITIVE_INFINITY, set.getSup(), TEST_TOLERANCE);
+        Assert.assertEquals(Double.POSITIVE_INFINITY, set.getSize(), TEST_TOLERANCE);
+        Assert.assertEquals(0.0, set.getBoundarySize(), TEST_TOLERANCE);
+        GeometryTestUtils.assertVectorEquals(new Cartesian1D(Double.NaN), (Cartesian1D) set.getBarycenter(), TEST_TOLERANCE);
+
+        List<Interval> intervals = set.asList();
+        Assert.assertEquals(4, intervals.size());
+        assertInterval(Double.NEGATIVE_INFINITY, -2.0, intervals.get(0), TEST_TOLERANCE);
+        assertInterval(-1.0, 2.0, intervals.get(1), TEST_TOLERANCE);
+        assertInterval(5.0, 9.0, intervals.get(2), TEST_TOLERANCE);
+        assertInterval(10.0, Double.POSITIVE_INFINITY, intervals.get(3), TEST_TOLERANCE);
+
+        assertLocation(Region.Location.INSIDE, set, Double.NEGATIVE_INFINITY);
+        assertLocation(Region.Location.INSIDE, set, -3);
+        assertLocation(Region.Location.OUTSIDE, set, -1.5);
+        assertLocation(Region.Location.INSIDE, set, 0.0);
+        assertLocation(Region.Location.OUTSIDE, set, 3.0);
+        assertLocation(Region.Location.INSIDE, set, 6.0);
+        assertLocation(Region.Location.BOUNDARY, set, 9.0 - 1e-16);
+        assertLocation(Region.Location.BOUNDARY, set, 9.0 + 1e-16);
+        assertLocation(Region.Location.OUTSIDE, set, 9.5);
+        assertLocation(Region.Location.INSIDE, set, 11.0);
+        assertLocation(Region.Location.INSIDE, set, Double.POSITIVE_INFINITY);
+    }
+
+    @Test
+    public void testFromBoundaries_intervalsSmallerThanToleranceCollapseToPoints_single() {
+        // arrange
+        List<SubHyperplane<Euclidean1D>> boundaries = new ArrayList<>();
+        boundaries.add(subOrientedPoint(1.0, false));
+        boundaries.add(subOrientedPoint(1.01, true));
+
+        // act
+        IntervalsSet set = new IntervalsSet(boundaries, 0.1);
+
+        // assert
+        Assert.assertEquals(0.1, set.getTolerance(), Precision.SAFE_MIN);
+        Assert.assertEquals(1.0, set.getInf(), TEST_TOLERANCE);
+        Assert.assertEquals(1.01, set.getSup(), TEST_TOLERANCE);
+        Assert.assertEquals(0.0, set.getSize(), TEST_TOLERANCE);
+        Assert.assertEquals(0.0, set.getBoundarySize(), TEST_TOLERANCE);
+        GeometryTestUtils.assertVectorEquals(new Cartesian1D(1.0), (Cartesian1D) set.getBarycenter(), TEST_TOLERANCE);
+
+        List<Interval> intervals = set.asList();
+        Assert.assertEquals(1, intervals.size());
+        assertInterval(1.0, 1.0, intervals.get(0), TEST_TOLERANCE);
+
+        assertLocation(Region.Location.OUTSIDE, set, 0.0);
+        assertLocation(Region.Location.BOUNDARY, set, 1.0);
+        assertLocation(Region.Location.OUTSIDE, set, 2.0);
     }
 
     @Test
@@ -344,5 +489,15 @@ public class IntervalsSetTest {
 
     private void assertLocation(Region.Location location, IntervalsSet set, double pt) {
         Assert.assertEquals(location, set.checkPoint(new Cartesian1D(pt)));
+    }
+
+    private void assertInterval(double expectedInf, double expectedSup, Interval actual, double tolerance) {
+        Assert.assertEquals(expectedInf, actual.getInf(), tolerance);
+        Assert.assertEquals(expectedSup, actual.getSup(), tolerance);
+    }
+
+    private SubOrientedPoint subOrientedPoint(double location, boolean direct) {
+        // the remaining region isn't necessary for creating 1D boundaries so we can set it to null here
+        return new SubOrientedPoint(new OrientedPoint(new Cartesian1D(location), direct, TEST_TOLERANCE), null);
     }
 }

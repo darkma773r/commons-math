@@ -40,7 +40,7 @@ public class GeometryTestUtils {
      * @param tolerance
      */
     public static void assertVectorEquals(Vector1D expected, Vector1D actual, double tolerance) {
-        String msg = "Expected vector to equal " + expected + " but was " + actual;
+        String msg = "Expected vector to equal " + expected + " but was " + actual + ";";
         Assert.assertEquals(msg, expected.getX(), actual.getX(), tolerance);
     }
 
@@ -52,7 +52,7 @@ public class GeometryTestUtils {
      * @param tolerance
      */
     public static void assertVectorEquals(Vector2D expected, Vector2D actual, double tolerance) {
-        String msg = "Expected vector to equal " + expected + " but was " + actual;
+        String msg = "Expected vector to equal " + expected + " but was " + actual + ";";
         Assert.assertEquals(msg, expected.getX(), actual.getX(), tolerance);
         Assert.assertEquals(msg, expected.getY(), actual.getY(), tolerance);
     }
@@ -65,7 +65,7 @@ public class GeometryTestUtils {
      * @param tolerance
      */
     public static void assertVectorEquals(Vector3D expected, Vector3D actual, double tolerance) {
-        String msg = "Expected vector to equal " + expected + " but was " + actual;
+        String msg = "Expected vector to equal " + expected + " but was " + actual + ";";
         Assert.assertEquals(msg, expected.getX(), actual.getX(), tolerance);
         Assert.assertEquals(msg, expected.getY(), actual.getY(), tolerance);
         Assert.assertEquals(msg, expected.getZ(), actual.getZ(), tolerance);
