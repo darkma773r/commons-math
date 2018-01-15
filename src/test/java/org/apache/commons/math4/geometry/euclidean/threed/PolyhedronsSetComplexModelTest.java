@@ -31,6 +31,7 @@ import org.junit.Test;
  * 3D models.
  * @author matt
  */
+@Ignore
 public class PolyhedronsSetComplexModelTest {
 
     private static final double EPSILON = 1e-6;
