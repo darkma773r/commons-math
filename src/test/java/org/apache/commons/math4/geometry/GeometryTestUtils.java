@@ -16,15 +16,22 @@
  */
 package org.apache.commons.math4.geometry;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Stack;
+import java.util.List;
 
 import org.apache.commons.math4.geometry.euclidean.oned.Euclidean1D;
 import org.apache.commons.math4.geometry.euclidean.oned.IntervalsSet;
 import org.apache.commons.math4.geometry.euclidean.oned.OrientedPoint;
 import org.apache.commons.math4.geometry.euclidean.oned.SubOrientedPoint;
 import org.apache.commons.math4.geometry.euclidean.oned.Vector1D;
+import org.apache.commons.math4.geometry.euclidean.threed.Cartesian3D;
+import org.apache.commons.math4.geometry.euclidean.threed.Euclidean3D;
+import org.apache.commons.math4.geometry.euclidean.threed.Plane;
+import org.apache.commons.math4.geometry.euclidean.threed.SubPlane;
 import org.apache.commons.math4.geometry.euclidean.threed.Vector3D;
+import org.apache.commons.math4.geometry.euclidean.twod.Cartesian2D;
+import org.apache.commons.math4.geometry.euclidean.twod.PolygonsSet;
 import org.apache.commons.math4.geometry.euclidean.twod.Vector2D;
 import org.apache.commons.math4.geometry.partitioning.BSPTree;
 import org.apache.commons.math4.geometry.partitioning.BSPTreeVisitor;
@@ -73,6 +80,11 @@ public class GeometryTestUtils {
 
     public static void printTree1D(BSPTree<Euclidean1D> tree) {
         TreePrinter1D printer = new TreePrinter1D();
+        System.out.println(printer.writeAsString(tree));
+    }
+
+    public static void printTree3D(BSPTree<Euclidean3D> tree) {
+        TreePrinter3D printer = new TreePrinter3D();
         System.out.println(printer.writeAsString(tree));
     }
 
@@ -170,7 +182,7 @@ public class GeometryTestUtils {
 
             IntervalsSet remainingRegion = (IntervalsSet) cut.getRemainingRegion();
             if (remainingRegion != null) {
-                write(", region: [");
+                write(", remainingRegion: [");
 
                 boolean isFirst = true;
                 for (double[] interval : remainingRegion) {
@@ -188,5 +200,44 @@ public class GeometryTestUtils {
 
             write("}");
         }
+    }
+
+    public static class TreePrinter3D extends TreePrinter<Euclidean3D> {
+
+        @Override
+        protected void writeInternalNode(BSPTree<Euclidean3D> node) {
+            SubPlane cut = (SubPlane) node.getCut();
+            Plane plane = (Plane) cut.getHyperplane();
+            PolygonsSet polygon = (PolygonsSet) cut.getRemainingRegion();
+
+            write("cut = { normal: " + plane.getNormal() + ", origin: " + plane.getOrigin() + "}");
+            write(", remainingRegion = [");
+
+            boolean isFirst = true;
+            for (Cartesian2D[] loop : polygon.getVertices()) {
+                // convert to 3-space for easier debugging
+                List<Cartesian3D> loop3 = new ArrayList<>();
+                for (Cartesian2D vertex : loop) {
+                    if (vertex != null) {
+                        loop3.add(plane.toSpace(vertex));
+                    }
+                    else {
+                        loop3.add(null);
+                    }
+                }
+
+                if (isFirst) {
+                    isFirst = false;
+                }
+                else {
+                    write(", ");
+                }
+
+                write(loop3.toString());
+            }
+
+            write("]");
+        }
+
     }
 }

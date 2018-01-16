@@ -167,7 +167,7 @@ public class IntervalsSetTest {
         assertLocation(Region.Location.OUTSIDE, set, Double.POSITIVE_INFINITY);
     }
 
-    @Ignore // TODO: Test is failing
+    @Ignore // TODO: Fix issue with Characterization class not handling the tree created here.
     @Test
     public void testInterval_singlePoint() {
         // act
