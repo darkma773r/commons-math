@@ -72,6 +72,7 @@ public class PolyhedronsSetTest {
         Assert.assertEquals(TEST_TOLERANCE, polySet.getTolerance(), Precision.EPSILON);
         Assert.assertEquals(Double.POSITIVE_INFINITY, polySet.getSize(), TEST_TOLERANCE);
         Assert.assertEquals(0.0, polySet.getBoundarySize(), TEST_TOLERANCE);
+        GeometryTestUtils.assertVectorEquals(Cartesian3D.NaN, (Cartesian3D) polySet.getBarycenter(), TEST_TOLERANCE);
         Assert.assertEquals(false, polySet.isEmpty());
         Assert.assertEquals(true, polySet.isFull());
 
@@ -92,6 +93,7 @@ public class PolyhedronsSetTest {
         Assert.assertEquals(TEST_TOLERANCE, polySet.getTolerance(), Precision.EPSILON);
         Assert.assertEquals(0.0, polySet.getSize(), TEST_TOLERANCE);
         Assert.assertEquals(0.0, polySet.getBoundarySize(), TEST_TOLERANCE);
+        GeometryTestUtils.assertVectorEquals(Cartesian3D.NaN, (Cartesian3D) polySet.getBarycenter(), TEST_TOLERANCE);
         Assert.assertEquals(true, polySet.isEmpty());
         Assert.assertEquals(false, polySet.isFull());
 
@@ -118,6 +120,7 @@ public class PolyhedronsSetTest {
         Assert.assertEquals(TEST_TOLERANCE, polySet.getTolerance(), Precision.EPSILON);
         Assert.assertEquals(Double.POSITIVE_INFINITY, polySet.getSize(), TEST_TOLERANCE);
         Assert.assertEquals(Double.POSITIVE_INFINITY, polySet.getBoundarySize(), TEST_TOLERANCE);
+        GeometryTestUtils.assertVectorEquals(Cartesian3D.NaN, (Cartesian3D) polySet.getBarycenter(), TEST_TOLERANCE);
         Assert.assertEquals(false, polySet.isEmpty());
         Assert.assertEquals(false, polySet.isFull());
 
@@ -143,6 +146,7 @@ public class PolyhedronsSetTest {
         Assert.assertEquals(TEST_TOLERANCE, polySet.getTolerance(), Precision.EPSILON);
         Assert.assertEquals(Double.POSITIVE_INFINITY, polySet.getSize(), TEST_TOLERANCE);
         Assert.assertEquals(6, polySet.getBoundarySize(), TEST_TOLERANCE);
+        GeometryTestUtils.assertVectorEquals(Cartesian3D.NaN, (Cartesian3D) polySet.getBarycenter(), TEST_TOLERANCE);
         Assert.assertEquals(false, polySet.isEmpty());
         Assert.assertEquals(false, polySet.isFull());
 
@@ -167,6 +171,7 @@ public class PolyhedronsSetTest {
         Assert.assertEquals(TEST_TOLERANCE, polySet.getTolerance(), Precision.EPSILON);
         Assert.assertEquals(0.0, polySet.getSize(), TEST_TOLERANCE);
         Assert.assertEquals(0.0, polySet.getBoundarySize(), TEST_TOLERANCE);
+        GeometryTestUtils.assertVectorEquals(Cartesian3D.NaN, (Cartesian3D) polySet.getBarycenter(), TEST_TOLERANCE);
         Assert.assertEquals(false, polySet.isEmpty());
         Assert.assertEquals(true, polySet.isFull());
     }
@@ -183,6 +188,7 @@ public class PolyhedronsSetTest {
         Assert.assertEquals(TEST_TOLERANCE, polySet.getTolerance(), Precision.EPSILON);
         Assert.assertEquals(1.0, polySet.getSize(), TEST_TOLERANCE);
         Assert.assertEquals(6.0, polySet.getBoundarySize(), TEST_TOLERANCE);
+        GeometryTestUtils.assertVectorEquals(Cartesian3D.ZERO, (Cartesian3D) polySet.getBarycenter(), TEST_TOLERANCE);
         Assert.assertEquals(false, polySet.isEmpty());
         Assert.assertEquals(false, polySet.isFull());
 
@@ -247,6 +253,7 @@ public class PolyhedronsSetTest {
         Assert.assertEquals(TEST_TOLERANCE, polySet.getTolerance(), Precision.EPSILON);
         Assert.assertEquals(2.0, polySet.getSize(), TEST_TOLERANCE);
         Assert.assertEquals(12.0, polySet.getBoundarySize(), TEST_TOLERANCE);
+        GeometryTestUtils.assertVectorEquals(new Cartesian3D(1, 0, 0), (Cartesian3D) polySet.getBarycenter(), TEST_TOLERANCE);
         Assert.assertEquals(false, polySet.isEmpty());
         Assert.assertEquals(false, polySet.isFull());
 
@@ -274,6 +281,7 @@ public class PolyhedronsSetTest {
         Assert.assertEquals(TEST_TOLERANCE, polySet.getTolerance(), Precision.EPSILON);
         Assert.assertEquals(2.0, polySet.getSize(), TEST_TOLERANCE);
         Assert.assertEquals(10.0, polySet.getBoundarySize(), TEST_TOLERANCE);
+        GeometryTestUtils.assertVectorEquals(new Cartesian3D(0.5, 0, 0), (Cartesian3D) polySet.getBarycenter(), TEST_TOLERANCE);
         Assert.assertEquals(false, polySet.isEmpty());
         Assert.assertEquals(false, polySet.isFull());
 
@@ -301,6 +309,7 @@ public class PolyhedronsSetTest {
         Assert.assertEquals(tolerance, polySet.getTolerance(), Precision.EPSILON);
         Assert.assertEquals(2.0, polySet.getSize(), tolerance);
         Assert.assertEquals(10.0, polySet.getBoundarySize(), tolerance);
+        GeometryTestUtils.assertVectorEquals(new Cartesian3D(0.5 + 5e-8, 0, 0), (Cartesian3D) polySet.getBarycenter(), TEST_TOLERANCE);
         Assert.assertEquals(false, polySet.isEmpty());
         Assert.assertEquals(false, polySet.isFull());
 
@@ -327,6 +336,7 @@ public class PolyhedronsSetTest {
         Assert.assertEquals(TEST_TOLERANCE, polySet.getTolerance(), Precision.EPSILON);
         Assert.assertEquals(2.0, polySet.getSize(), TEST_TOLERANCE);
         Assert.assertEquals(12.0, polySet.getBoundarySize(), TEST_TOLERANCE);
+        GeometryTestUtils.assertVectorEquals(new Cartesian3D(0.5, 0.5, 0), (Cartesian3D) polySet.getBarycenter(), TEST_TOLERANCE);
         Assert.assertEquals(false, polySet.isEmpty());
         Assert.assertEquals(false, polySet.isFull());
 
@@ -355,6 +365,7 @@ public class PolyhedronsSetTest {
         Assert.assertEquals(TEST_TOLERANCE, polySet.getTolerance(), Precision.EPSILON);
         Assert.assertEquals(2.0, polySet.getSize(), TEST_TOLERANCE);
         Assert.assertEquals(12.0, polySet.getBoundarySize(), TEST_TOLERANCE);
+        GeometryTestUtils.assertVectorEquals(new Cartesian3D(0.5, 0.5, 0.5), (Cartesian3D) polySet.getBarycenter(), TEST_TOLERANCE);
         Assert.assertEquals(false, polySet.isEmpty());
         Assert.assertEquals(false, polySet.isFull());
 
@@ -444,6 +455,43 @@ public class PolyhedronsSetTest {
             new Cartesian3D(2, 3, 4),
             new Cartesian3D(1, 3, 3)
         });
+    }
+
+    @Test
+    public void testSphere() {
+        // arrange
+        // (use a high tolerance value here since the sphere is only an approximation)
+        double approximationTolerance = 0.2;
+        double radius = 1.0;
+
+        // act
+        PolyhedronsSet polySet = createSphere(new Cartesian3D(1, 2, 3), radius, 8, 16);
+
+        // assert
+        Assert.assertEquals(sphereVolume(radius), polySet.getSize(), approximationTolerance);
+        Assert.assertEquals(sphereSurface(radius), polySet.getBoundarySize(), approximationTolerance);
+        GeometryTestUtils.assertVectorEquals(new Cartesian3D(1, 2, 3), (Cartesian3D) polySet.getBarycenter(), TEST_TOLERANCE);
+        Assert.assertEquals(false, polySet.isEmpty());
+        Assert.assertEquals(false, polySet.isFull());
+
+        checkPoints(Region.Location.OUTSIDE, polySet,
+                new Cartesian3D(-0.1, 2, 3),
+                new Cartesian3D(2.1, 2, 3),
+                new Cartesian3D(1, 0.9, 3),
+                new Cartesian3D(1, 3.1, 3),
+                new Cartesian3D(1, 2, 1.9),
+                new Cartesian3D(1, 2, 4.1),
+                new Cartesian3D(1.6, 2.6, 3.6));
+
+        checkPoints(Region.Location.INSIDE, polySet,
+                new Cartesian3D(1, 2, 3),
+                new Cartesian3D(0.1, 2, 3),
+                new Cartesian3D(1.9, 2, 3),
+                new Cartesian3D(1, 2.1, 3),
+                new Cartesian3D(1, 2.9, 3),
+                new Cartesian3D(1, 2, 2.1),
+                new Cartesian3D(1, 2, 3.9),
+                new Cartesian3D(1.5, 2.5, 3.5));
     }
 
     @Test
@@ -846,6 +894,207 @@ public class PolyhedronsSetTest {
         }
     }
 
+    @Test
+    public void testBoolean_union() throws IOException {
+        // arrange
+        double tolerance = 0.05;
+        double size = 1.0;
+        double radius = size * 0.5;
+        PolyhedronsSet box = new PolyhedronsSet(0, size, 0, size, 0, size, TEST_TOLERANCE);
+        PolyhedronsSet sphere = createSphere(new Cartesian3D(size * 0.5, size * 0.5, size), radius, 8, 16);
+
+        // act
+        PolyhedronsSet result = (PolyhedronsSet) new RegionFactory<Euclidean3D>().union(box, sphere);
+
+        // new OBJWriter().write("union.obj", result);
+
+        // assert
+        Assert.assertEquals(cubeVolume(size) + (sphereVolume(radius) * 0.5),
+                result.getSize(), tolerance);
+        Assert.assertEquals(cubeSurface(size) - circleSurface(radius) + (0.5 * sphereSurface(radius)),
+                result.getBoundarySize(), tolerance);
+        Assert.assertEquals(false, result.isEmpty());
+        Assert.assertEquals(false, result.isFull());
+
+        checkPoints(Region.Location.OUTSIDE, result,
+                new Cartesian3D(-0.1, 0.5, 0.5),
+                new Cartesian3D(1.1, 0.5, 0.5),
+                new Cartesian3D(0.5, -0.1, 0.5),
+                new Cartesian3D(0.5, 1.1, 0.5),
+                new Cartesian3D(0.5, 0.5, -0.1),
+                new Cartesian3D(0.5, 0.5, 1.6));
+
+        checkPoints(Region.Location.INSIDE, result,
+                new Cartesian3D(0.1, 0.5, 0.5),
+                new Cartesian3D(0.9, 0.5, 0.5),
+                new Cartesian3D(0.5, 0.1, 0.5),
+                new Cartesian3D(0.5, 0.9, 0.5),
+                new Cartesian3D(0.5, 0.5, 0.1),
+                new Cartesian3D(0.5, 0.5, 1.4));
+    }
+
+    @Test
+    public void testBoolean_intersection() throws IOException {
+        // arrange
+        double tolerance = 0.05;
+        double size = 1.0;
+        double radius = size * 0.5;
+        PolyhedronsSet box = new PolyhedronsSet(0, size, 0, size, 0, size, TEST_TOLERANCE);
+        PolyhedronsSet sphere = createSphere(new Cartesian3D(size * 0.5, size * 0.5, size), radius, 8, 16);
+
+        // act
+        PolyhedronsSet result = (PolyhedronsSet) new RegionFactory<Euclidean3D>().intersection(box, sphere);
+
+        // new OBJWriter().write("intersection.obj", result);
+
+        // assert
+        Assert.assertEquals((sphereVolume(radius) * 0.5), result.getSize(), tolerance);
+        Assert.assertEquals(circleSurface(radius) + (0.5 * sphereSurface(radius)),
+                result.getBoundarySize(), tolerance);
+        Assert.assertEquals(false, result.isEmpty());
+        Assert.assertEquals(false, result.isFull());
+
+        checkPoints(Region.Location.OUTSIDE, result,
+                new Cartesian3D(-0.1, 0.5, 1.0),
+                new Cartesian3D(1.1, 0.5, 1.0),
+                new Cartesian3D(0.5, -0.1, 1.0),
+                new Cartesian3D(0.5, 1.1, 1.0),
+                new Cartesian3D(0.5, 0.5, 0.4),
+                new Cartesian3D(0.5, 0.5, 1.1));
+
+        checkPoints(Region.Location.INSIDE, result,
+                new Cartesian3D(0.1, 0.5, 0.9),
+                new Cartesian3D(0.9, 0.5, 0.9),
+                new Cartesian3D(0.5, 0.1, 0.9),
+                new Cartesian3D(0.5, 0.9, 0.9),
+                new Cartesian3D(0.5, 0.5, 0.6),
+                new Cartesian3D(0.5, 0.5, 0.9));
+    }
+
+    @Test
+    public void testBoolean_xor() throws IOException {
+        // arrange
+        double tolerance = 0.05;
+        double size = 1.0;
+        double radius = size * 0.5;
+        PolyhedronsSet box = new PolyhedronsSet(0, size, 0, size, 0, size, TEST_TOLERANCE);
+        PolyhedronsSet sphere = createSphere(new Cartesian3D(size * 0.5, size * 0.5, size), radius, 8, 16);
+
+        // act
+        PolyhedronsSet result = (PolyhedronsSet) new RegionFactory<Euclidean3D>().xor(box, sphere);
+
+        // new OBJWriter().write("xor.obj", result);
+
+        Assert.assertEquals(cubeVolume(size), result.getSize(), tolerance);
+
+        // assert
+        // TODO: check the surface area calculation here
+//        Assert.assertEquals(cubeSurface(radius) + (sphereSurface(radius)),
+//                result.getBoundarySize(), tolerance);
+        Assert.assertEquals(false, result.isEmpty());
+        Assert.assertEquals(false, result.isFull());
+
+        checkPoints(Region.Location.OUTSIDE, result,
+                new Cartesian3D(-0.1, 0.5, 0.5),
+                new Cartesian3D(1.1, 0.5, 0.5),
+                new Cartesian3D(0.5, -0.1, 0.5),
+                new Cartesian3D(0.5, 1.1, 0.5),
+                new Cartesian3D(0.5, 0.5, -0.1),
+                new Cartesian3D(0.5, 0.5, 1.6),
+                new Cartesian3D(0.5, 0.5, 0.9));
+
+        checkPoints(Region.Location.INSIDE, result,
+                new Cartesian3D(0.1, 0.5, 0.5),
+                new Cartesian3D(0.9, 0.5, 0.5),
+                new Cartesian3D(0.5, 0.1, 0.5),
+                new Cartesian3D(0.5, 0.9, 0.5),
+                new Cartesian3D(0.5, 0.5, 0.1),
+                new Cartesian3D(0.5, 0.5, 1.4));
+    }
+
+    @Test
+    public void testBoolean_difference() throws IOException {
+        // arrange
+        double tolerance = 0.05;
+        double size = 1.0;
+        double radius = size * 0.5;
+        PolyhedronsSet box = new PolyhedronsSet(0, size, 0, size, 0, size, TEST_TOLERANCE);
+        PolyhedronsSet sphere = createSphere(new Cartesian3D(size * 0.5, size * 0.5, size), radius, 8, 16);
+
+        // act
+        PolyhedronsSet result = (PolyhedronsSet) new RegionFactory<Euclidean3D>().difference(box, sphere);
+
+        // new OBJWriter().write("difference.obj", result);
+
+        // assert
+        Assert.assertEquals(cubeVolume(size) - (sphereVolume(radius) * 0.5), result.getSize(), tolerance);
+        Assert.assertEquals(cubeSurface(size) - circleSurface(radius) + (0.5 * sphereSurface(radius)),
+                result.getBoundarySize(), tolerance);
+        Assert.assertEquals(false, result.isEmpty());
+        Assert.assertEquals(false, result.isFull());
+
+        checkPoints(Region.Location.OUTSIDE, result,
+                new Cartesian3D(-0.1, 0.5, 1.0),
+                new Cartesian3D(1.1, 0.5, 1.0),
+                new Cartesian3D(0.5, -0.1, 1.0),
+                new Cartesian3D(0.5, 1.1, 1.0),
+                new Cartesian3D(0.5, 0.5, -0.1),
+                new Cartesian3D(0.5, 0.5, 0.6));
+
+        checkPoints(Region.Location.INSIDE, result,
+                new Cartesian3D(0.1, 0.5, 0.4),
+                new Cartesian3D(0.9, 0.5, 0.4),
+                new Cartesian3D(0.5, 0.1, 0.4),
+                new Cartesian3D(0.5, 0.9, 0.4),
+                new Cartesian3D(0.5, 0.5, 0.1),
+                new Cartesian3D(0.5, 0.5, 0.4));
+    }
+
+    @Test
+    public void testBoolean_multiple() throws IOException {
+        // arrange
+        double tolerance = 0.05;
+        double size = 1.0;
+        double radius = size * 0.5;
+        PolyhedronsSet box = new PolyhedronsSet(0, size, 0, size, 0, size, TEST_TOLERANCE);
+        PolyhedronsSet sphereToAdd = createSphere(new Cartesian3D(size * 0.5, size * 0.5, size), radius, 8, 16);
+        PolyhedronsSet sphereToRemove1 = createSphere(new Cartesian3D(size * 0.5, 0, size * 0.5), radius, 8, 16);
+        PolyhedronsSet sphereToRemove2 = createSphere(new Cartesian3D(size * 0.5, 1, size * 0.5), radius, 8, 16);
+
+        RegionFactory<Euclidean3D> factory = new RegionFactory<Euclidean3D>();
+
+        // act
+        PolyhedronsSet result = (PolyhedronsSet) factory.union(box, sphereToAdd);
+        result = (PolyhedronsSet) factory.difference(result, sphereToRemove1);
+        result = (PolyhedronsSet) factory.difference(result, sphereToRemove2);
+
+        // new OBJWriter().write("multiple.obj", result);
+
+        // assert
+        Assert.assertEquals(cubeVolume(size) - (sphereVolume(radius) * 0.5),
+                result.getSize(), tolerance);
+        Assert.assertEquals(cubeSurface(size) - (3.0 * circleSurface(radius)) + (1.5 * sphereSurface(radius)),
+                result.getBoundarySize(), tolerance);
+        Assert.assertEquals(false, result.isEmpty());
+        Assert.assertEquals(false, result.isFull());
+
+        checkPoints(Region.Location.OUTSIDE, result,
+                new Cartesian3D(-0.1, 0.5, 0.5),
+                new Cartesian3D(1.1, 0.5, 0.5),
+                new Cartesian3D(0.5, 0.4, 0.5),
+                new Cartesian3D(0.5, 0.6, 0.5),
+                new Cartesian3D(0.5, 0.5, -0.1),
+                new Cartesian3D(0.5, 0.5, 1.6));
+
+        checkPoints(Region.Location.INSIDE, result,
+                new Cartesian3D(0.1, 0.5, 0.1),
+                new Cartesian3D(0.9, 0.5, 0.1),
+                new Cartesian3D(0.5, 0.4, 0.1),
+                new Cartesian3D(0.5, 0.6, 0.1),
+                new Cartesian3D(0.5, 0.5, 0.1),
+                new Cartesian3D(0.5, 0.5, 1.4));
+    }
+
     private String loadTestData(final String resourceName)
             throws IOException {
         try (Reader reader = new InputStreamReader(getClass().getResourceAsStream(resourceName), "UTF-8")) {
@@ -931,8 +1180,75 @@ public class PolyhedronsSetTest {
         return new SubPlane(plane, polygon);
     }
 
+    private PolyhedronsSet createSphere(Cartesian3D center, double radius, int stacks, int slices) {
+        List<Plane> planes = new ArrayList<>();
+
+        // add top and bottom planes (+/- z)
+        Cartesian3D topZ = new Cartesian3D(center.getX(), center.getY(), center.getZ() + radius);
+        Cartesian3D bottomZ = new Cartesian3D(center.getX(), center.getY(), center.getZ() - radius);
+
+        planes.add(new Plane(topZ, Cartesian3D.PLUS_K, TEST_TOLERANCE));
+        planes.add(new Plane(bottomZ, Cartesian3D.MINUS_K, TEST_TOLERANCE));
+
+        // add the side planes
+        double vDelta = FastMath.PI / stacks;
+        double hDelta = FastMath.PI * 2 / slices;
+
+        double adjustedRadius = (radius + (radius * FastMath.cos(vDelta * 0.5))) / 2.0;
+
+        double vAngle;
+        double hAngle;
+        double stackRadius;
+        double stackHeight;
+        double x, y;
+        Cartesian3D norm, pt;
+
+        vAngle = -0.5 * vDelta;
+        for (int v=0; v<stacks; ++v) {
+            vAngle += vDelta;
+
+            stackRadius = FastMath.sin(vAngle) * adjustedRadius;
+            stackHeight = FastMath.cos(vAngle) * adjustedRadius;
+
+            hAngle = -0.5 * hDelta;
+            for (int h=0; h<slices; ++h) {
+                hAngle += hDelta;
+
+                x = FastMath.cos(hAngle) * stackRadius;
+                y = FastMath.sin(hAngle) * stackRadius;
+
+                norm = new Cartesian3D(x, y, stackHeight).normalize();
+                pt = norm.scalarMultiply(adjustedRadius).add(center);
+
+                planes.add(new Plane(pt, norm, TEST_TOLERANCE));
+            }
+        }
+
+        return (PolyhedronsSet) new RegionFactory<Euclidean3D>().buildConvex(planes.toArray(new Plane[0]));
+    }
+
     private void assertSubPlaneNormal(Cartesian3D expectedNormal, SubHyperplane<Euclidean3D> sub) {
         Cartesian3D norm = ((Plane) sub.getHyperplane()).getNormal();
         GeometryTestUtils.assertVectorEquals(expectedNormal, norm, TEST_TOLERANCE);
+    }
+
+    private double cubeVolume(double size) {
+        return size * size * size;
+    }
+
+    private double cubeSurface(double size) {
+        return 6.0 * size * size;
+    }
+
+    private double sphereVolume(double radius) {
+        return 4.0 * FastMath.PI * radius * radius * radius / 3.0;
+    }
+
+    private double sphereSurface(double radius) {
+        return 4.0 * FastMath.PI * radius * radius;
+    }
+
+    private double circleSurface(double radius) {
+        return FastMath.PI * radius * radius;
     }
 }
