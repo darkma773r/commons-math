@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.math3.util.FastMath;
+import org.apache.commons.math4.geometry.euclidean.oned.Cartesian1D;
 import org.apache.commons.math4.geometry.euclidean.oned.Euclidean1D;
 import org.apache.commons.math4.geometry.euclidean.oned.IntervalsSet;
 import org.apache.commons.math4.geometry.euclidean.oned.OrientedPoint;
@@ -31,7 +33,10 @@ import org.apache.commons.math4.geometry.euclidean.threed.Plane;
 import org.apache.commons.math4.geometry.euclidean.threed.SubPlane;
 import org.apache.commons.math4.geometry.euclidean.threed.Vector3D;
 import org.apache.commons.math4.geometry.euclidean.twod.Cartesian2D;
+import org.apache.commons.math4.geometry.euclidean.twod.Euclidean2D;
+import org.apache.commons.math4.geometry.euclidean.twod.Line;
 import org.apache.commons.math4.geometry.euclidean.twod.PolygonsSet;
+import org.apache.commons.math4.geometry.euclidean.twod.SubLine;
 import org.apache.commons.math4.geometry.euclidean.twod.Vector2D;
 import org.apache.commons.math4.geometry.partitioning.BSPTree;
 import org.apache.commons.math4.geometry.partitioning.BSPTreeVisitor;
@@ -80,6 +85,11 @@ public class GeometryTestUtils {
 
     public static void printTree1D(BSPTree<Euclidean1D> tree) {
         TreePrinter1D printer = new TreePrinter1D();
+        System.out.println(printer.writeAsString(tree));
+    }
+
+    public static void printTree2D(BSPTree<Euclidean2D> tree) {
+        TreePrinter2D printer = new TreePrinter2D();
         System.out.println(printer.writeAsString(tree));
     }
 
@@ -199,6 +209,32 @@ public class GeometryTestUtils {
             }
 
             write("}");
+        }
+    }
+
+    public static class TreePrinter2D extends TreePrinter<Euclidean2D> {
+
+        @Override
+        protected void writeInternalNode(BSPTree<Euclidean2D> node) {
+            SubLine cut = (SubLine) node.getCut();
+            Line line = (Line) cut.getHyperplane();
+            IntervalsSet remainingRegion = (IntervalsSet) cut.getRemainingRegion();
+
+            write("cut = { angle: " + FastMath.toDegrees(line.getAngle()) + ", origin: " + line.toSpace(Cartesian1D.ZERO) + "}");
+            write(", remainingRegion: [");
+
+            boolean isFirst = true;
+            for (double[] interval : remainingRegion) {
+                if (isFirst) {
+                    isFirst = false;
+                }
+                else {
+                    write(", ");
+                }
+                write(Arrays.toString(interval));
+            }
+
+            write("]");
         }
     }
 

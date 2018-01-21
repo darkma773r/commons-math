@@ -28,7 +28,6 @@ import org.apache.commons.math4.geometry.partitioning.SubHyperplane;
 import org.apache.commons.math4.util.FastMath;
 import org.apache.commons.numbers.core.Precision;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class IntervalsSetTest {
@@ -167,7 +166,6 @@ public class IntervalsSetTest {
         assertLocation(Region.Location.OUTSIDE, set, Double.POSITIVE_INFINITY);
     }
 
-    @Ignore // TODO: Fix issue with Characterization class not handling the tree created here.
     @Test
     public void testInterval_singlePoint() {
         // act
