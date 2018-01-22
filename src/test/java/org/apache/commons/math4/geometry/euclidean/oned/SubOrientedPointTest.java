@@ -27,7 +27,7 @@ public class SubOrientedPointTest {
 
     @Test
     public void testGetSize() {
-    	// arrange
+        // arrange
         OrientedPoint hyperplane = new OrientedPoint(new Cartesian1D(1), true, TEST_TOLERANCE);
         SubOrientedPoint pt = hyperplane.wholeHyperplane();
 
@@ -37,7 +37,7 @@ public class SubOrientedPointTest {
 
     @Test
     public void testIsEmpty() {
-    	// arrange
+        // arrange
         OrientedPoint hyperplane = new OrientedPoint(new Cartesian1D(1), true, TEST_TOLERANCE);
         SubOrientedPoint pt = hyperplane.wholeHyperplane();
 
@@ -47,7 +47,7 @@ public class SubOrientedPointTest {
 
     @Test
     public void testBuildNew() {
-    	// arrange
+        // arrange
         OrientedPoint originalHyperplane = new OrientedPoint(new Cartesian1D(1), true, TEST_TOLERANCE);
         SubOrientedPoint pt = originalHyperplane.wholeHyperplane();
 
@@ -136,7 +136,7 @@ public class SubOrientedPointTest {
 
     @Test
     public void testSplit_usesToleranceFromParentHyperplane() {
-    	// arrange
+        // arrange
         OrientedPoint hyperplane = new OrientedPoint(new Cartesian1D(1), true, 0.1);
         SubOrientedPoint pt = hyperplane.wholeHyperplane();
 

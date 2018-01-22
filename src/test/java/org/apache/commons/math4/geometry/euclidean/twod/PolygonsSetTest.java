@@ -21,25 +21,18 @@ import java.util.List;
 
 import org.apache.commons.math3.util.Precision;
 import org.apache.commons.math4.exception.MathIllegalArgumentException;
-import org.apache.commons.math4.geometry.euclidean.oned.Interval;
-import org.apache.commons.math4.geometry.euclidean.oned.IntervalsSet;
-import org.apache.commons.math4.geometry.euclidean.threed.Cartesian3D;
-import org.apache.commons.math4.geometry.euclidean.threed.PolyhedronsSet;
 import org.apache.commons.math4.geometry.GeometryTestUtils;
 import org.apache.commons.math4.geometry.euclidean.oned.Cartesian1D;
-import org.apache.commons.math4.geometry.euclidean.twod.Euclidean2D;
-import org.apache.commons.math4.geometry.euclidean.twod.Line;
-import org.apache.commons.math4.geometry.euclidean.twod.PolygonsSet;
-import org.apache.commons.math4.geometry.euclidean.twod.SubLine;
-import org.apache.commons.math4.geometry.euclidean.twod.Cartesian2D;
+import org.apache.commons.math4.geometry.euclidean.oned.Interval;
+import org.apache.commons.math4.geometry.euclidean.oned.IntervalsSet;
 import org.apache.commons.math4.geometry.partitioning.BSPTree;
 import org.apache.commons.math4.geometry.partitioning.BSPTreeVisitor;
 import org.apache.commons.math4.geometry.partitioning.BoundaryProjection;
 import org.apache.commons.math4.geometry.partitioning.Hyperplane;
 import org.apache.commons.math4.geometry.partitioning.Region;
+import org.apache.commons.math4.geometry.partitioning.Region.Location;
 import org.apache.commons.math4.geometry.partitioning.RegionFactory;
 import org.apache.commons.math4.geometry.partitioning.SubHyperplane;
-import org.apache.commons.math4.geometry.partitioning.Region.Location;
 import org.apache.commons.math4.util.FastMath;
 import org.junit.Assert;
 import org.junit.Ignore;
@@ -235,7 +228,7 @@ public class PolygonsSetTest {
 
     @Test
     public void testMixOfFiniteAndInfiniteBoundaries() {
-    	// arrange
+        // arrange
         double tolerance = 1e-10;
 
         Line line = new Line(new Cartesian2D(1, 0), new Cartesian2D(1, 1), tolerance);
