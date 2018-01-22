@@ -63,7 +63,6 @@ public class PolyhedronsSetTest {
 
     private static final double TEST_TOLERANCE = 1e-10;
 
-    @Ignore // TODO: Fix incorrect size here
     @Test
     public void testWholeSpace() {
         // act
@@ -170,7 +169,7 @@ public class PolyhedronsSetTest {
 
         // assert
         Assert.assertEquals(TEST_TOLERANCE, polySet.getTolerance(), Precision.EPSILON);
-        Assert.assertEquals(0.0, polySet.getSize(), TEST_TOLERANCE);
+        Assert.assertEquals(Double.POSITIVE_INFINITY, polySet.getSize(), TEST_TOLERANCE);
         Assert.assertEquals(0.0, polySet.getBoundarySize(), TEST_TOLERANCE);
         GeometryTestUtils.assertVectorEquals(Cartesian3D.NaN, (Cartesian3D) polySet.getBarycenter(), TEST_TOLERANCE);
         Assert.assertEquals(false, polySet.isEmpty());

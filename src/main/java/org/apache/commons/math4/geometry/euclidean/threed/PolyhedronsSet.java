@@ -353,30 +353,61 @@ public class PolyhedronsSet extends AbstractRegion<Euclidean3D, Euclidean2D> {
     /** {@inheritDoc} */
     @Override
     protected void computeGeometricalProperties() {
-
-        // compute the contribution of all boundary facets
-        getTree(true).visit(new FacetsContributionVisitor());
-
-        if (getSize() < 0) {
-            // the polyhedrons set as a finite outside
-            // surrounded by an infinite inside
+        // check simple cases first
+        if (isEmpty()) {
+            setSize(0.0);
+            setBarycenter((Point<Euclidean3D>) Cartesian3D.NaN);
+        }
+        else if (isFull()) {
             setSize(Double.POSITIVE_INFINITY);
             setBarycenter((Point<Euclidean3D>) Cartesian3D.NaN);
-        } else {
-            // the polyhedrons set is finite, apply the remaining scaling factors
-            setSize(getSize() / 3.0);
-            setBarycenter((Point<Euclidean3D>) new Cartesian3D(1.0 / (4 * getSize()), (Cartesian3D) getBarycenter()));
         }
+        else {
+            // not empty or full; compute the contribution of all boundary facets
+            final FacetsContributionVisitor contributionVisitor = new FacetsContributionVisitor();
+            getTree(true).visit(contributionVisitor);
 
+            final double size = contributionVisitor.getSize();
+            final Cartesian3D barycenter = contributionVisitor.getBarycenter();
+
+            if (size < 0) {
+                // the polyhedrons set is a finite outside
+                // surrounded by an infinite inside
+                setSize(Double.POSITIVE_INFINITY);
+                setBarycenter((Point<Euclidean3D>) Cartesian3D.NaN);
+            } else {
+                // the polyhedrons set is finite, apply the remaining scaling factors
+                setSize(size);
+                setBarycenter((Point<Euclidean3D>) barycenter);
+            }
+        }
     }
 
-    /** Visitor computing geometrical properties. */
-    private class FacetsContributionVisitor implements BSPTreeVisitor<Euclidean3D> {
+    /** Visitor computing polyhedron geometrical properties.
+     *  The volume of the polyhedron is computed using the equation
+     *  <code>V = (1/3)*&Sigma;<sub>F</sub>[(C<sub>F</sub>&sdot;N<sub>F</sub>)*area(F)]</code>,
+     *  where <code>F</code> represents each face in the polyhedron, <code>C<sub>F</sub></code>
+     *  represents the barycenter of the face, and <code>N<sub>F</sub></code> represents the
+     *  normal of the face. (More details can be found on Wikipedia
+     *  <a href="https://en.wikipedia.org/wiki/Polyhedron#Volume">here</a>.)
+     *  This essentially splits up the polyhedron into pyramids with a polyhedron
+     *  face forming the base of each pyramid.
+     *  The barycenter is computed in a similar way. The barycenter of each pyramid
+     *  is calculated using the fact that it is located 3/4 of the way along the
+     *  line from the apex to the base. The polyhedron barycenter then becomes
+     *  the volume-weighted average of these pyramid centers.
+     */
+    private static class FacetsContributionVisitor implements BSPTreeVisitor<Euclidean3D> {
 
-        /** Simple constructor. */
-        FacetsContributionVisitor() {
-            setSize(0);
-            setBarycenter((Point<Euclidean3D>) new Cartesian3D(0, 0, 0));
+        private double volumeSum;
+        private Cartesian3D rawBarycenter = Cartesian3D.ZERO;
+
+        public double getSize() {
+            return volumeSum / 3.0;
+        }
+
+        public Cartesian3D getBarycenter() {
+            return new Cartesian3D(1.0 / (4 * getSize()), rawBarycenter);
         }
 
         /** {@inheritDoc} */
@@ -404,34 +435,30 @@ public class PolyhedronsSet extends AbstractRegion<Euclidean3D, Euclidean2D> {
         public void visitLeafNode(final BSPTree<Euclidean3D> node) {
         }
 
-        /** Add he contribution of a boundary facet.
+        /** Add the contribution of a boundary facet.
          * @param facet boundary facet
          * @param reversed if true, the facet has the inside on its plus side
          */
         private void addContribution(final SubHyperplane<Euclidean3D> facet, final boolean reversed) {
 
             final Region<Euclidean2D> polygon = ((SubPlane) facet).getRemainingRegion();
-            final double area    = polygon.getSize();
+            final double area = polygon.getSize();
 
             if (Double.isInfinite(area)) {
-                setSize(Double.POSITIVE_INFINITY);
-                setBarycenter((Point<Euclidean3D>) Cartesian3D.NaN);
+                volumeSum = Double.POSITIVE_INFINITY;
+                rawBarycenter = Cartesian3D.NaN;
             } else {
-
-                final Plane    plane  = (Plane) facet.getHyperplane();
-                final Cartesian3D facetB = plane.toSpace(polygon.getBarycenter());
-                double   scaled = area * facetB.dotProduct(plane.getNormal());
+                final Plane plane = (Plane) facet.getHyperplane();
+                final Cartesian3D facetBarycenter = plane.toSpace(polygon.getBarycenter());
+                double scaled = area * facetBarycenter.dotProduct(plane.getNormal());
                 if (reversed) {
                     scaled = -scaled;
                 }
 
-                setSize(getSize() + scaled);
-                setBarycenter((Point<Euclidean3D>) new Cartesian3D(1.0, (Cartesian3D) getBarycenter(), scaled, facetB));
-
+                volumeSum += scaled;
+                rawBarycenter = new Cartesian3D(1.0, rawBarycenter, scaled, facetBarycenter);
             }
-
         }
-
     }
 
     /** Get the first sub-hyperplane crossed by a semi-infinite line.
@@ -466,7 +493,7 @@ public class PolyhedronsSet extends AbstractRegion<Euclidean3D, Euclidean2D> {
         final Plane                plane = (Plane) cut.getHyperplane();
 
         // establish search order
-        final double offset = plane.getOffset((Point<Euclidean3D>) point);
+        final double offset = plane.getOffset(point);
         final boolean in    = FastMath.abs(offset) < getTolerance();
         final BSPTree<Euclidean3D> near;
         final BSPTree<Euclidean3D> far;
