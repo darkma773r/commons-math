@@ -1121,7 +1121,6 @@ public class PolyhedronsSetTest {
     @Test
     public void testXor_self() {
         // arrange
-        double tolerance = 0.05;
         double radius = 1.0;
 
         PolyhedronsSet sphere = createSphere(Cartesian3D.ZERO, radius, 8, 16);
@@ -1193,7 +1192,6 @@ public class PolyhedronsSetTest {
     @Test
     public void testDifference_self() {
         // arrange
-        double tolerance = 0.05;
         double radius = 1.0;
 
         PolyhedronsSet sphere = createSphere(Cartesian3D.ZERO, radius, 8, 16);
