@@ -77,11 +77,11 @@ public class PolyhedronsSetTest {
         Assert.assertEquals(true, polySet.isFull());
 
         checkPoints(Region.Location.INSIDE, polySet,
-                new Cartesian3D(Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY),
+                new Cartesian3D(-Double.MAX_VALUE, -Double.MAX_VALUE, -Double.MAX_VALUE),
                 new Cartesian3D(-100, -100, -100),
                 new Cartesian3D(0, 0, 0),
                 new Cartesian3D(100, 100, 100),
-                new Cartesian3D(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY));
+                new Cartesian3D(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE));
     }
 
     @Test
@@ -98,14 +98,13 @@ public class PolyhedronsSetTest {
         Assert.assertEquals(false, polySet.isFull());
 
         checkPoints(Region.Location.OUTSIDE, polySet,
-                new Cartesian3D(Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY),
+                new Cartesian3D(-Double.MAX_VALUE, -Double.MAX_VALUE, -Double.MAX_VALUE),
                 new Cartesian3D(-100, -100, -100),
                 new Cartesian3D(0, 0, 0),
                 new Cartesian3D(100, 100, 100),
-                new Cartesian3D(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY));
+                new Cartesian3D(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE));
     }
 
-    @Ignore // TODO: Determine why (-inf, -inf, -inf) is showing as outside of the region
     @Test
     public void testHalfSpace() {
         // arrange
@@ -125,12 +124,12 @@ public class PolyhedronsSetTest {
         Assert.assertEquals(false, polySet.isFull());
 
         checkPoints(Region.Location.INSIDE, polySet,
-                new Cartesian3D(Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY),
+                new Cartesian3D(-Double.MAX_VALUE, -Double.MAX_VALUE, -Double.MAX_VALUE),
                 new Cartesian3D(-100, -100, -100));
         checkPoints(Region.Location.BOUNDARY, polySet, new Cartesian3D(0, 0, 0));
         checkPoints(Region.Location.OUTSIDE, polySet,
                 new Cartesian3D(100, 100, 100),
-                new Cartesian3D(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY));
+                new Cartesian3D(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE));
     }
 
     @Test
@@ -151,10 +150,10 @@ public class PolyhedronsSetTest {
         Assert.assertEquals(false, polySet.isFull());
 
         checkPoints(Region.Location.INSIDE, polySet,
-                new Cartesian3D(Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY),
+                new Cartesian3D(-Double.MAX_VALUE, -Double.MAX_VALUE, -Double.MAX_VALUE),
                 new Cartesian3D(-100, -100, -100),
                 new Cartesian3D(100, 100, 100),
-                new Cartesian3D(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY));
+                new Cartesian3D(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE));
         checkPoints(Region.Location.OUTSIDE, polySet,
                 new Cartesian3D(0, 0, 0));
     }
