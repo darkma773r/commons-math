@@ -371,12 +371,11 @@ public class PolyhedronsSet extends AbstractRegion<Euclidean3D, Euclidean2D> {
             final Cartesian3D barycenter = contributionVisitor.getBarycenter();
 
             if (size < 0) {
-                // the polyhedrons set is a finite outside
-                // surrounded by an infinite inside
+                // the polyhedrons set is a finite outside surrounded by an infinite inside
                 setSize(Double.POSITIVE_INFINITY);
                 setBarycenter((Point<Euclidean3D>) Cartesian3D.NaN);
             } else {
-                // the polyhedrons set is finite, apply the remaining scaling factors
+                // the polyhedrons set is finite
                 setSize(size);
                 setBarycenter((Point<Euclidean3D>) barycenter);
             }
@@ -388,7 +387,7 @@ public class PolyhedronsSet extends AbstractRegion<Euclidean3D, Euclidean2D> {
      *  <code>V = (1/3)*&Sigma;<sub>F</sub>[(C<sub>F</sub>&sdot;N<sub>F</sub>)*area(F)]</code>,
      *  where <code>F</code> represents each face in the polyhedron, <code>C<sub>F</sub></code>
      *  represents the barycenter of the face, and <code>N<sub>F</sub></code> represents the
-     *  normal of the face. (More details can be found on Wikipedia
+     *  normal of the face. (More details can be found in the article
      *  <a href="https://en.wikipedia.org/wiki/Polyhedron#Volume">here</a>.)
      *  This essentially splits up the polyhedron into pyramids with a polyhedron
      *  face forming the base of each pyramid.
@@ -400,14 +399,19 @@ public class PolyhedronsSet extends AbstractRegion<Euclidean3D, Euclidean2D> {
     private static class FacetsContributionVisitor implements BSPTreeVisitor<Euclidean3D> {
 
         private double volumeSum;
-        private Cartesian3D rawBarycenter = Cartesian3D.ZERO;
+        private Cartesian3D barycenterSum = Cartesian3D.ZERO;
 
         public double getSize() {
+            // apply the 1/3 pyramid volume scaling factor
             return volumeSum / 3.0;
         }
 
         public Cartesian3D getBarycenter() {
-            return new Cartesian3D(1.0 / (4 * getSize()), rawBarycenter);
+            // Since the volume we used when adding together the facet contributions
+            // was 3x the actual pyramid size, we'll multiply by 1/4 here instead
+            // of 3/4. This will make the overall polyhedron volume the weighted
+            // average of the pyramid barycenters.
+            return new Cartesian3D(1.0 / (4 * getSize()), barycenterSum);
         }
 
         /** {@inheritDoc} */
@@ -446,17 +450,20 @@ public class PolyhedronsSet extends AbstractRegion<Euclidean3D, Euclidean2D> {
 
             if (Double.isInfinite(area)) {
                 volumeSum = Double.POSITIVE_INFINITY;
-                rawBarycenter = Cartesian3D.NaN;
+                barycenterSum = Cartesian3D.NaN;
             } else {
                 final Plane plane = (Plane) facet.getHyperplane();
                 final Cartesian3D facetBarycenter = plane.toSpace(polygon.getBarycenter());
-                double scaled = area * facetBarycenter.dotProduct(plane.getNormal());
+
+                // the volume here is actually 3x the actual pyramid volume; we'll apply
+                // the final scaling all at once at the end
+                double scaledVolume = area * facetBarycenter.dotProduct(plane.getNormal());
                 if (reversed) {
-                    scaled = -scaled;
+                    scaledVolume = -scaledVolume;
                 }
 
-                volumeSum += scaled;
-                rawBarycenter = new Cartesian3D(1.0, rawBarycenter, scaled, facetBarycenter);
+                volumeSum += scaledVolume;
+                barycenterSum = new Cartesian3D(1.0, barycenterSum, scaledVolume, facetBarycenter);
             }
         }
     }
