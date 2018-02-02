@@ -17,6 +17,7 @@
 package org.apache.commons.math4.geometry.euclidean.twod;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.math3.util.Precision;
@@ -137,12 +138,11 @@ public class PolygonsSetTest {
         checkPoints(Region.Location.BOUNDARY, poly, Cartesian2D.ZERO);
     }
 
-    @Ignore // TODO: fix the index out of bounds exception here on getVertices() and finish implementing this test
     @Test
-    public void testTwoIntersectingLines() {
+    public void testInfiniteLines_twoIntersecting() {
         // arrange
         Line line1 = new Line(new Cartesian2D(0, 0), new Cartesian2D(1, 1), TEST_TOLERANCE);
-        Line line2 = new Line(new Cartesian2D(0, 0), new Cartesian2D(1, -1), TEST_TOLERANCE);
+        Line line2 = new Line(new Cartesian2D(1, -1), new Cartesian2D(0, 0), TEST_TOLERANCE);
 
         List<SubHyperplane<Euclidean2D>> boundaries = new ArrayList<SubHyperplane<Euclidean2D>>();
         boundaries.add(line1.wholeHyperplane());
@@ -160,21 +160,166 @@ public class PolygonsSetTest {
         GeometryTestUtils.assertVectorEquals(Cartesian2D.NaN, (Cartesian2D) poly.getBarycenter(), TEST_TOLERANCE);
 
         Cartesian2D[][] vertices = poly.getVertices();
-        Assert.assertEquals(2, vertices.length);
+        Assert.assertEquals(1, vertices.length);
 
         Cartesian2D[] loop = vertices[0];
         Assert.assertEquals(3, loop.length);
         Assert.assertEquals(null, loop[0]);
-        GeometryTestUtils.assertVectorEquals(line1.toSpace(new Cartesian1D(-Float.MAX_VALUE)), loop[1], TEST_TOLERANCE);
-        GeometryTestUtils.assertVectorEquals(line1.toSpace(new Cartesian1D(Float.MAX_VALUE)), loop[2], TEST_TOLERANCE);
+        GeometryTestUtils.assertVectorEquals(line2.toSpace(new Cartesian1D(-Float.MAX_VALUE)), loop[1], TEST_TOLERANCE);
+        GeometryTestUtils.assertVectorEquals(line2.toSpace(new Cartesian1D(Float.MAX_VALUE)), loop[2], TEST_TOLERANCE);
+
+        checkPoints(Region.Location.INSIDE, poly,
+                new Cartesian2D(-1, 0),
+                new Cartesian2D(-Float.MAX_VALUE, Float.MAX_VALUE / 2.0));
+        checkPoints(Region.Location.OUTSIDE, poly,
+                new Cartesian2D(1, 0),
+                new Cartesian2D(Float.MAX_VALUE, Float.MAX_VALUE / 2.0));
+        checkPoints(Region.Location.BOUNDARY, poly, Cartesian2D.ZERO);
+    }
+
+    @Test
+    public void testInfiniteLines_twoParallel_facingIn() {
+        // arrange
+        Line line1 = new Line(new Cartesian2D(1, 1), new Cartesian2D(0, 1), TEST_TOLERANCE);
+        Line line2 = new Line(new Cartesian2D(0, -1), new Cartesian2D(1, -1), TEST_TOLERANCE);
+
+        List<SubHyperplane<Euclidean2D>> boundaries = new ArrayList<SubHyperplane<Euclidean2D>>();
+        boundaries.add(line1.wholeHyperplane());
+        boundaries.add(line2.wholeHyperplane());
+
+        // act
+        PolygonsSet poly = new PolygonsSet(boundaries, TEST_TOLERANCE);
+
+        // assert
+        Assert.assertEquals(TEST_TOLERANCE, poly.getTolerance(), Precision.EPSILON);
+        Assert.assertEquals(Double.POSITIVE_INFINITY, poly.getSize(), TEST_TOLERANCE);
+        Assert.assertEquals(Double.POSITIVE_INFINITY, poly.getBoundarySize(), TEST_TOLERANCE);
+        Assert.assertEquals(false, poly.isEmpty());
+        Assert.assertEquals(false, poly.isFull());
+        GeometryTestUtils.assertVectorEquals(Cartesian2D.NaN, (Cartesian2D) poly.getBarycenter(), TEST_TOLERANCE);
+
+        checkVerticesEqual(new Cartesian2D[][] {
+            {
+                null,
+                line1.toSpace(new Cartesian1D(-Float.MAX_VALUE)),
+                line1.toSpace(new Cartesian1D(Float.MAX_VALUE))
+            },
+            {
+                null,
+                line2.toSpace(new Cartesian1D(-Float.MAX_VALUE)),
+                line2.toSpace(new Cartesian1D(Float.MAX_VALUE))
+            }
+        }, poly.getVertices());
+
+        checkPoints(Region.Location.INSIDE, poly,
+                new Cartesian2D(0, 0),
+                new Cartesian2D(0, 0.9),
+                new Cartesian2D(0, -0.9));
+        checkPoints(Region.Location.OUTSIDE, poly,
+                new Cartesian2D(0, 1.1),
+                new Cartesian2D(0, -1.1));
+        checkPoints(Region.Location.BOUNDARY, poly,
+                new Cartesian2D(0, 1),
+                new Cartesian2D(0, -1));
+    }
+
+    @Test
+    public void testInfiniteLines_twoParallel_facingOut() {
+        // arrange
+        Line line1 = new Line(new Cartesian2D(0, 1), new Cartesian2D(1, 1), TEST_TOLERANCE);
+        Line line2 = new Line(new Cartesian2D(1, -1), new Cartesian2D(0, -1), TEST_TOLERANCE);
+
+        List<SubHyperplane<Euclidean2D>> boundaries = new ArrayList<SubHyperplane<Euclidean2D>>();
+        boundaries.add(line1.wholeHyperplane());
+        boundaries.add(line2.wholeHyperplane());
+
+        // act
+        PolygonsSet poly = new PolygonsSet(boundaries, TEST_TOLERANCE);
+
+        // assert
+        Assert.assertEquals(TEST_TOLERANCE, poly.getTolerance(), Precision.EPSILON);
+        Assert.assertEquals(Double.POSITIVE_INFINITY, poly.getSize(), TEST_TOLERANCE);
+        Assert.assertEquals(Double.POSITIVE_INFINITY, poly.getBoundarySize(), TEST_TOLERANCE);
+        Assert.assertEquals(false, poly.isEmpty());
+        Assert.assertEquals(false, poly.isFull());
+        GeometryTestUtils.assertVectorEquals(Cartesian2D.NaN, (Cartesian2D) poly.getBarycenter(), TEST_TOLERANCE);
+
+        checkVerticesEqual(new Cartesian2D[][] {
+            {
+                null,
+                line1.toSpace(new Cartesian1D(-Float.MAX_VALUE)),
+                line1.toSpace(new Cartesian1D(Float.MAX_VALUE))
+            },
+            {
+                null,
+                line2.toSpace(new Cartesian1D(-Float.MAX_VALUE)),
+                line2.toSpace(new Cartesian1D(Float.MAX_VALUE))
+            }
+        }, poly.getVertices());
 
         checkPoints(Region.Location.OUTSIDE, poly,
-                new Cartesian2D(1, -1),
-                new Cartesian2D(Double.POSITIVE_INFINITY, Double.NEGATIVE_INFINITY));
+                new Cartesian2D(0, 0),
+                new Cartesian2D(0, 0.9),
+                new Cartesian2D(0, -0.9));
         checkPoints(Region.Location.INSIDE, poly,
-                new Cartesian2D(-1, 1),
-                new Cartesian2D(Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY));
-        checkPoints(Region.Location.BOUNDARY, poly, Cartesian2D.ZERO);
+                new Cartesian2D(0, 1.1),
+                new Cartesian2D(0, -1.1));
+        checkPoints(Region.Location.BOUNDARY, poly,
+                new Cartesian2D(0, 1),
+                new Cartesian2D(0, -1));
+    }
+
+    @Ignore // TODO: fix this test
+    @Test
+    public void testMixedParallelAndInfiniteLines() {
+        // arrange
+        Line line1 = new Line(new Cartesian2D(1, 1), new Cartesian2D(0, 1), TEST_TOLERANCE);
+        Line line2 = new Line(new Cartesian2D(0, -1), new Cartesian2D(1, -1), TEST_TOLERANCE);
+        Line line3 = new Line(new Cartesian2D(0, 1), new Cartesian2D(0, 0), TEST_TOLERANCE);
+
+        List<SubHyperplane<Euclidean2D>> boundaries = new ArrayList<SubHyperplane<Euclidean2D>>();
+        boundaries.add(line1.wholeHyperplane());
+        boundaries.add(line2.wholeHyperplane());
+        boundaries.add(new SubLine(line3, new IntervalsSet(
+                line3.toSubSpace(new Cartesian2D(0, 1)).getX(),
+                line3.toSubSpace(new Cartesian2D(0, -1)).getX(), TEST_TOLERANCE)));
+
+        // act
+        PolygonsSet poly = new PolygonsSet(boundaries, TEST_TOLERANCE);
+
+        GeometryTestUtils.printTree2D(poly.getTree(false));
+
+        // assert
+        Assert.assertEquals(TEST_TOLERANCE, poly.getTolerance(), Precision.EPSILON);
+        Assert.assertEquals(Double.POSITIVE_INFINITY, poly.getSize(), TEST_TOLERANCE);
+        Assert.assertEquals(Double.POSITIVE_INFINITY, poly.getBoundarySize(), TEST_TOLERANCE);
+        Assert.assertEquals(false, poly.isEmpty());
+        Assert.assertEquals(false, poly.isFull());
+        GeometryTestUtils.assertVectorEquals(Cartesian2D.NaN, (Cartesian2D) poly.getBarycenter(), TEST_TOLERANCE);
+
+        checkVerticesEqual(new Cartesian2D[][] {
+            {
+                null,
+                line1.toSpace(new Cartesian1D(-Float.MAX_VALUE)),
+                line1.toSpace(new Cartesian1D(Float.MAX_VALUE))
+            },
+            {
+                null,
+                line2.toSpace(new Cartesian1D(-Float.MAX_VALUE)),
+                line2.toSpace(new Cartesian1D(Float.MAX_VALUE))
+            }
+        }, poly.getVertices());
+
+        checkPoints(Region.Location.OUTSIDE, poly,
+                new Cartesian2D(0, 0),
+                new Cartesian2D(0, 0.9),
+                new Cartesian2D(0, -0.9));
+        checkPoints(Region.Location.INSIDE, poly,
+                new Cartesian2D(0, 1.1),
+                new Cartesian2D(0, -1.1));
+        checkPoints(Region.Location.BOUNDARY, poly,
+                new Cartesian2D(0, 1),
+                new Cartesian2D(0, -1));
     }
 
     @Test
@@ -1406,10 +1551,52 @@ public class PolygonsSetTest {
         }
     }
 
+    private void checkVerticesEqual(Cartesian2D[][] expectedVertices, Cartesian2D[][] actualVertices) {
+        Assert.assertEquals("Expected vertices array to have length of " + expectedVertices.length + " but was " + actualVertices.length,
+                expectedVertices.length, actualVertices.length);
+
+        // go through each loop in the expected array and try to find a match in the actual array
+        for (Cartesian2D[] expectedLoop : expectedVertices) {
+            boolean foundMatch = false;
+            for (Cartesian2D[] actualLoop : actualVertices) {
+                if (vertexLoopsEqual(expectedLoop, actualLoop, TEST_TOLERANCE)) {
+                    foundMatch = true;
+                    break;
+                }
+            }
+
+            if (!foundMatch) {
+                Assert.fail("Expected to find vertex loop " + Arrays.toString(expectedLoop) + " but did not.");
+            }
+        }
+    }
+
+    private boolean vertexLoopsEqual(Cartesian2D[] a, Cartesian2D[] b, double tolerance) {
+        if (a.length == b.length) {
+
+            Cartesian2D ptA;
+            Cartesian2D ptB;
+            for (int i=0; i<a.length; ++i) {
+                ptA = a[i];
+                ptB = b[i];
+
+                if (!((ptA == null && ptB == null) ||
+                        (Precision.equals(ptA.getX(), ptB.getX(), tolerance) &&
+                         Precision.equals(ptA.getY(), ptB.getY(), tolerance)))) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
     private boolean checkInSegment(Cartesian2D p,
                                    Cartesian2D p1, Cartesian2D p2,
                                    double tolerance) {
-        Line line = new Line(p1, p2, 1.0e-10);
+        Line line = new Line(p1, p2, tolerance);
         if (line.getOffset(p) < tolerance) {
             double x  = (line.toSubSpace(p)).getX();
             double x1 = (line.toSubSpace(p1)).getX();
@@ -1434,7 +1621,7 @@ public class PolygonsSetTest {
                     Cartesian2D[] loop = vertices[k];
                     int length = loop.length;
                     for (int l = 0; (! inSegment) && (l < length); ++l) {
-                        inSegment = checkInSegment(p, loop[l], loop[(l + 1) % length], 1.0e-10);
+                        inSegment = checkInSegment(p, loop[l], loop[(l + 1) % length], TEST_TOLERANCE);
                     }
                 }
                 Assert.assertTrue(inSegment);
@@ -1451,7 +1638,7 @@ public class PolygonsSetTest {
                                        min);
                     }
                 }
-                Assert.assertEquals(0.0, min, 1.0e-10);
+                Assert.assertEquals(0.0, min, TEST_TOLERANCE);
             }
         }
 
