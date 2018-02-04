@@ -872,7 +872,7 @@ public class PolygonsSet extends AbstractRegion<Euclidean2D, Euclidean1D> {
         if (loop.size() > 1) {
             // Go through the list and compare each segment with the next
             // one in line. We can remove the shared vertex if the segments
-            // are not infinite and they line in the same line.
+            // are not infinite and they lie on the same line.
             for (int i = 0; i < loop.size(); ++i) {
                 final Segment previous = loop.get(i);
                 int j = (i + 1) % loop.size();
