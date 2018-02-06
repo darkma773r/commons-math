@@ -84,6 +84,22 @@ public class GeometryTestUtils {
         Assert.assertEquals(msg, expected.getZ(), actual.getZ(), tolerance);
     }
 
+    /** Asserts that the given value is {@link Double#POSITIVE_INFINITY}.
+     * @param value
+     */
+    public static void assertPositiveInfinity(double value) {
+        Assert.assertTrue("Expected value to be positive infinity but was " + value ,
+                value == Double.POSITIVE_INFINITY);
+    }
+
+    /** Asserts that the given value is {@link Double#NEGATIVE_INFINITY}.
+     * @param value
+     */
+    public static void assertNegativeInfinity(double value) {
+        Assert.assertTrue("Expected value to be negative infinity but was " + value ,
+                value == Double.NEGATIVE_INFINITY);
+    }
+
     /** Prints a string representation of the given 1D {@link BSPTree} to
      * the console. This is intended for quick debugging of small trees.
      * @param tree
