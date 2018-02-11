@@ -69,7 +69,6 @@ public class PolygonsSetTest {
         }
     }
 
-    @Ignore // TODO: Fix incorrect barycenter; should be NaN
     @Test
     public void testEmpty() {
         // act
