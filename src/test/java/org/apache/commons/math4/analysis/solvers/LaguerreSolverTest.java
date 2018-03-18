@@ -16,13 +16,14 @@
  */
 package org.apache.commons.math4.analysis.solvers;
 
-import org.apache.commons.math4.TestUtils;
+import org.apache.commons.numbers.complex.Complex;
+import org.apache.commons.numbers.core.Precision;
 import org.apache.commons.math4.analysis.polynomials.PolynomialFunction;
 import org.apache.commons.math4.analysis.solvers.LaguerreSolver;
-import org.apache.commons.math4.complex.Complex;
 import org.apache.commons.math4.exception.NoBracketingException;
 import org.apache.commons.math4.exception.NumberIsTooLargeException;
 import org.apache.commons.math4.util.FastMath;
+import org.apache.commons.math4.TestUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -122,11 +123,11 @@ public final class LaguerreSolverTest {
         final LaguerreSolver solver = new LaguerreSolver();
         final Complex[] result = solver.solveAllComplex(coefficients, 0);
 
-        for (Complex expected : new Complex[] { new Complex(0, -2),
-                                                new Complex(0, 2),
-                                                new Complex(0.5, 0.5 * FastMath.sqrt(3)),
-                                                new Complex(-1, 0),
-                                                new Complex(0.5, -0.5 * FastMath.sqrt(3.0)) }) {
+        for (Complex expected : new Complex[] { Complex.ofCartesian(0, -2),
+                                                Complex.ofCartesian(0, 2),
+                                                Complex.ofCartesian(0.5, 0.5 * FastMath.sqrt(3)),
+                                                Complex.ofCartesian(-1, 0),
+                                                Complex.ofCartesian(0.5, -0.5 * FastMath.sqrt(3.0)) }) {
             final double tolerance = FastMath.max(solver.getAbsoluteAccuracy(),
                                                   FastMath.abs(expected.abs() * solver.getRelativeAccuracy()));
             TestUtils.assertContains(result, expected, tolerance);
