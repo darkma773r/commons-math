@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.apache.commons.math4.geometry.euclidean.twod.Cartesian2D;
+import org.apache.commons.math4.geometry.euclidean.twod.Vector2D;
 import org.apache.commons.math4.geometry.euclidean.twod.Euclidean2D;
 import org.apache.commons.math4.geometry.euclidean.twod.PolygonsSet;
 import org.apache.commons.math4.geometry.partitioning.BSPTree;
@@ -78,10 +78,10 @@ public class OBJWriter {
      * @param vertices
      * @throws IOException
      */
-    private static void writeVertices(Writer writer, List<Cartesian3D> vertices) throws IOException {
+    private static void writeVertices(Writer writer, List<Vector3D> vertices) throws IOException {
         DecimalFormat df = new DecimalFormat("0.######");
 
-        for (Cartesian3D v : vertices) {
+        for (Vector3D v : vertices) {
             writer.write("v ");
             writer.write(df.format(v.getX()));
             writer.write(" ");
@@ -114,7 +114,7 @@ public class OBJWriter {
      * other, then the vertices are considered equal. This helps to avoid
      * writing duplicate vertices in the OBJ output.
      */
-    private static class VertexComparator implements Comparator<Cartesian3D> {
+    private static class VertexComparator implements Comparator<Vector3D> {
 
         /** Geometric tolerance value */
         private double tolerance;
@@ -128,7 +128,7 @@ public class OBJWriter {
 
         /** {@inheritDoc} */
         @Override
-        public int compare(Cartesian3D a, Cartesian3D b) {
+        public int compare(Vector3D a, Vector3D b) {
             int result = compareDoubles(a.getX(), b.getX());
             if (result == 0) {
                 result = compareDoubles(a.getY(), b.getY());
@@ -167,10 +167,10 @@ public class OBJWriter {
         private final double tolerance;
 
         /** Map of vertices to their index in the vertices list */
-        private Map<Cartesian3D, Integer> vertexIndexMap;
+        private Map<Vector3D, Integer> vertexIndexMap;
 
         /** List of unique vertices in the BSPTree boundary */
-        private List<Cartesian3D> vertices;
+        private List<Vector3D> vertices;
 
         /**
          * List of face vertex indices. Each face will have 3 indices. Indices
@@ -191,7 +191,7 @@ public class OBJWriter {
         /** Returns the list of unique vertices found in the BSPTree.
          * @return
          */
-        public List<Cartesian3D> getVertices() {
+        public List<Vector3D> getVertices() {
             return vertices;
         }
 
@@ -240,8 +240,8 @@ public class OBJWriter {
             TriangleExtractor triExtractor = new TriangleExtractor(tolerance);
             poly.getTree(true).visit(triExtractor);
 
-            Cartesian3D v1, v2, v3;
-            for (Cartesian2D[] tri : triExtractor.getTriangles()) {
+            Vector3D v1, v2, v3;
+            for (Vector2D[] tri : triExtractor.getTriangles()) {
                 v1 = plane.toSpace(tri[0]);
                 v2 = plane.toSpace(tri[1]);
                 v3 = plane.toSpace(tri[2]);
@@ -260,7 +260,7 @@ public class OBJWriter {
          * @param vertex
          * @return
          */
-        private int getVertexIndex(Cartesian3D vertex) {
+        private int getVertexIndex(Vector3D vertex) {
             Integer idx = vertexIndexMap.get(vertex);
             if (idx == null) {
                 idx = vertices.size();
@@ -280,7 +280,7 @@ public class OBJWriter {
         private double tolerance;
 
         /** List of extracted triangles */
-        private List<Cartesian2D[]> triangles = new ArrayList<>();
+        private List<Vector2D[]> triangles = new ArrayList<>();
 
         /** Creates a new instance with the given geometric tolerance.
          * @param tolerance
@@ -292,7 +292,7 @@ public class OBJWriter {
         /** Returns the list of extracted triangles.
          * @return
          */
-        public List<Cartesian2D[]> getTriangles() {
+        public List<Vector2D[]> getTriangles() {
             return triangles;
         }
 
@@ -315,7 +315,7 @@ public class OBJWriter {
                 PolygonsSet convexPoly = new PolygonsSet(node.pruneAroundConvexCell(Boolean.TRUE,
                         Boolean.FALSE, null), tolerance);
 
-                for (Cartesian2D[] loop : convexPoly.getVertices()) {
+                for (Vector2D[] loop : convexPoly.getVertices()) {
                     if (loop.length > 0 && loop[0] != null) { // skip unclosed loops
                         addTriangles(loop);
                     }
@@ -327,10 +327,10 @@ public class OBJWriter {
          * triangles and adds them to the internal list.
          * @param vertices
          */
-        private void addTriangles(Cartesian2D[] vertices) {
+        private void addTriangles(Vector2D[] vertices) {
             // use a triangle fan to add the convex region
             for (int i=2; i<vertices.length; ++i) {
-                triangles.add(new Cartesian2D[] { vertices[0], vertices[i-1], vertices[i] });
+                triangles.add(new Vector2D[] { vertices[0], vertices[i-1], vertices[i] });
             }
         }
     }

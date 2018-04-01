@@ -22,7 +22,7 @@ import org.apache.commons.math4.geometry.Point;
 import org.apache.commons.math4.geometry.Vector;
 import org.apache.commons.math4.geometry.euclidean.oned.Euclidean1D;
 import org.apache.commons.math4.geometry.euclidean.oned.IntervalsSet;
-import org.apache.commons.math4.geometry.euclidean.oned.Cartesian1D;
+import org.apache.commons.math4.geometry.euclidean.oned.Vector1D;
 import org.apache.commons.math4.geometry.partitioning.Embedding;
 import org.apache.commons.math4.util.FastMath;
 import org.apache.commons.numbers.core.Precision;
@@ -41,10 +41,10 @@ import org.apache.commons.numbers.core.Precision;
 public class Line implements Embedding<Euclidean3D, Euclidean1D> {
 
     /** Line direction. */
-    private Cartesian3D direction;
+    private Vector3D direction;
 
     /** Line point closest to the origin. */
-    private Cartesian3D zero;
+    private Point3D zero;
 
     /** Tolerance below which points are considered identical. */
     private final double tolerance;
@@ -56,7 +56,7 @@ public class Line implements Embedding<Euclidean3D, Euclidean1D> {
      * @exception MathIllegalArgumentException if the points are equal
      * @since 3.3
      */
-    public Line(final Cartesian3D p1, final Cartesian3D p2, final double tolerance)
+    public Line(final Point3D p1, final Point3D p2, final double tolerance)
         throws MathIllegalArgumentException {
         reset(p1, p2);
         this.tolerance = tolerance;
@@ -78,14 +78,14 @@ public class Line implements Embedding<Euclidean3D, Euclidean1D> {
      * @param p2 second point belonging to the line (this can be any point, different from p1)
      * @exception MathIllegalArgumentException if the points are equal
      */
-    public void reset(final Cartesian3D p1, final Cartesian3D p2) throws MathIllegalArgumentException {
-        final Cartesian3D delta = p2.subtract(p1);
+    public void reset(final Point3D p1, final Point3D p2) throws MathIllegalArgumentException {
+        final Vector3D delta = p2.subtract(p1);
         final double norm2 = delta.getNormSq();
         if (norm2 == 0.0) {
             throw new MathIllegalArgumentException(LocalizedFormats.ZERO_NORM);
         }
-        this.direction = new Cartesian3D(1.0 / FastMath.sqrt(norm2), delta);
-        zero = new Cartesian3D(1.0, p1, -p1.dotProduct(delta) / norm2, delta);
+        this.direction = new Vector3D(1.0 / FastMath.sqrt(norm2), delta);
+        zero = new Point3D(1.0, p1, -p1.dotProduct(delta) / norm2, delta);
     }
 
     /** Get the tolerance below which points are considered identical.
@@ -108,14 +108,14 @@ public class Line implements Embedding<Euclidean3D, Euclidean1D> {
     /** Get the normalized direction vector.
      * @return normalized direction vector
      */
-    public Cartesian3D getDirection() {
+    public Vector3D getDirection() {
         return direction;
     }
 
     /** Get the line point closest to the origin.
      * @return line point closest to the origin
      */
-    public Cartesian3D getOrigin() {
+    public Vector3D getOrigin() {
         return zero;
     }
 
@@ -126,7 +126,7 @@ public class Line implements Embedding<Euclidean3D, Euclidean1D> {
      * @param point point to check
      * @return abscissa of the point
      */
-    public double getAbscissa(final Cartesian3D point) {
+    public double getAbscissa(final Vector3D point) {
         return point.subtract(zero).dotProduct(direction);
     }
 
@@ -134,8 +134,8 @@ public class Line implements Embedding<Euclidean3D, Euclidean1D> {
      * @param abscissa desired abscissa for the point
      * @return one point belonging to the line, at specified abscissa
      */
-    public Cartesian3D pointAt(final double abscissa) {
-        return new Cartesian3D(1.0, zero, abscissa, direction);
+    public Vector3D pointAt(final double abscissa) {
+        return new Vector3D(1.0, zero, abscissa, direction);
     }
 
     /** Transform a space point into a sub-space point.
@@ -143,7 +143,7 @@ public class Line implements Embedding<Euclidean3D, Euclidean1D> {
      * @return (n-1)-dimension point of the sub-space corresponding to
      * the specified space point
      */
-    public Cartesian1D toSubSpace(Vector<Euclidean3D> vector) {
+    public Vector1D toSubSpace(Vector<Euclidean3D> vector) {
         return toSubSpace((Point<Euclidean3D>) vector);
     }
 
@@ -152,24 +152,24 @@ public class Line implements Embedding<Euclidean3D, Euclidean1D> {
      * @return n-dimension point of the space corresponding to the
      * specified sub-space point
      */
-    public Cartesian3D toSpace(Vector<Euclidean1D> vector) {
+    public Vector3D toSpace(Vector<Euclidean1D> vector) {
         return toSpace((Point<Euclidean1D>) vector);
     }
 
     /** {@inheritDoc}
-     * @see #getAbscissa(Cartesian3D)
+     * @see #getAbscissa(Vector3D)
      */
     @Override
-    public Cartesian1D toSubSpace(final Point<Euclidean3D> point) {
-        return toSubSpace((Cartesian3D) point);
+    public Vector1D toSubSpace(final Point<Euclidean3D> point) {
+        return toSubSpace((Vector3D) point);
     }
 
     /** {@inheritDoc}
      * @see #pointAt(double)
      */
     @Override
-    public Cartesian3D toSpace(final Point<Euclidean1D> point) {
-        return toSpace((Cartesian1D) point);
+    public Vector3D toSpace(final Point<Euclidean1D> point) {
+        return toSpace((Vector1D) point);
     }
 
     /** Transform a space point into a sub-space point.
@@ -177,8 +177,8 @@ public class Line implements Embedding<Euclidean3D, Euclidean1D> {
      * @return (n-1)-dimension point of the sub-space corresponding to
      * the specified space point
      */
-    public Cartesian1D toSubSpace(final Cartesian3D point) {
-        return new Cartesian1D(getAbscissa(point));
+    public Vector1D toSubSpace(final Vector3D point) {
+        return new Vector1D(getAbscissa(point));
     }
 
     /** Transform a sub-space point into a space point.
@@ -186,7 +186,7 @@ public class Line implements Embedding<Euclidean3D, Euclidean1D> {
      * @return n-dimension point of the space corresponding to the
      * specified sub-space point
      */
-    public Cartesian3D toSpace(final Cartesian1D point) {
+    public Vector3D toSpace(final Vector1D point) {
         return pointAt(point.getX());
     }
 
@@ -198,7 +198,7 @@ public class Line implements Embedding<Euclidean3D, Euclidean1D> {
      * @return true if the lines are similar
      */
     public boolean isSimilarTo(final Line line) {
-        final double angle = Cartesian3D.angle(direction, line.direction);
+        final double angle = Vector3D.angle(direction, line.direction);
         return ((angle < tolerance) || (angle > (FastMath.PI - tolerance))) && contains(line.zero);
     }
 
@@ -206,7 +206,7 @@ public class Line implements Embedding<Euclidean3D, Euclidean1D> {
      * @param p point to check
      * @return true if p belongs to the line
      */
-    public boolean contains(final Cartesian3D p) {
+    public boolean contains(final Vector3D p) {
         return distance(p) < tolerance;
     }
 
@@ -214,9 +214,9 @@ public class Line implements Embedding<Euclidean3D, Euclidean1D> {
      * @param p to check
      * @return distance between the instance and the point
      */
-    public double distance(final Cartesian3D p) {
-        final Cartesian3D d = p.subtract(zero);
-        final Cartesian3D n = new Cartesian3D(1.0, d, -d.dotProduct(direction), direction);
+    public double distance(final Vector3D p) {
+        final Vector3D d = p.subtract(zero);
+        final Vector3D n = new Vector3D(1.0, d, -d.dotProduct(direction), direction);
         return n.getNorm();
     }
 
@@ -226,7 +226,7 @@ public class Line implements Embedding<Euclidean3D, Euclidean1D> {
      */
     public double distance(final Line line) {
 
-        final Cartesian3D normal = Cartesian3D.crossProduct(direction, line.direction);
+        final Vector3D normal = Vector3D.crossProduct(direction, line.direction);
         final double n = normal.getNorm();
         if (n < Precision.SAFE_MIN) {
             // lines are parallel
@@ -244,7 +244,7 @@ public class Line implements Embedding<Euclidean3D, Euclidean1D> {
      * @param line line to check against the instance
      * @return point of the instance closest to another line
      */
-    public Cartesian3D closestPoint(final Line line) {
+    public Vector3D closestPoint(final Line line) {
 
         final double cos = direction.dotProduct(line.direction);
         final double n = 1 - cos * cos;
@@ -253,11 +253,11 @@ public class Line implements Embedding<Euclidean3D, Euclidean1D> {
             return zero;
         }
 
-        final Cartesian3D delta0 = line.zero.subtract(zero);
+        final Vector3D delta0 = line.zero.subtract(zero);
         final double a        = delta0.dotProduct(direction);
         final double b        = delta0.dotProduct(line.direction);
 
-        return new Cartesian3D(1, zero, (a - b * cos) / n, direction);
+        return new Vector3D(1, zero, (a - b * cos) / n, direction);
 
     }
 
@@ -266,8 +266,8 @@ public class Line implements Embedding<Euclidean3D, Euclidean1D> {
      * @return intersection point of the instance and the other line
      * or null if there are no intersection points
      */
-    public Cartesian3D intersection(final Line line) {
-        final Cartesian3D closest = closestPoint(line);
+    public Vector3D intersection(final Line line) {
+        final Vector3D closest = closestPoint(line);
         return line.contains(closest) ? closest : null;
     }
 

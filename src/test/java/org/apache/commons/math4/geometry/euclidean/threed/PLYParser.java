@@ -40,7 +40,7 @@ import org.apache.commons.numbers.core.Precision;
 public class PLYParser {
 
     /** Parsed vertices. */
-    private Cartesian3D[] vertices;
+    private Vector3D[] vertices;
 
     /** Parsed faces. */
     private int[][] faces;
@@ -167,7 +167,7 @@ public class PLYParser {
             ++vPropertiesNumber;
 
             // parse vertices
-            vertices = new Cartesian3D[nbVertices];
+            vertices = new Vector3D[nbVertices];
             for (int i = 0; i < nbVertices; ++i) {
                 fields = parseNextLine();
                 if (fields.size() != vPropertiesNumber ||
@@ -176,7 +176,7 @@ public class PLYParser {
                     fields.get(zIndex).getToken() != Token.UNKNOWN) {
                     complain();
                 }
-                vertices[i] = new Cartesian3D(Double.parseDouble(fields.get(xIndex).getValue()),
+                vertices[i] = new Vector3D(Double.parseDouble(fields.get(xIndex).getValue()),
                                            Double.parseDouble(fields.get(yIndex).getValue()),
                                            Double.parseDouble(fields.get(zIndex).getValue()));
             }
@@ -229,7 +229,7 @@ public class PLYParser {
     /** Get the parsed vertices.
      * @return parsed vertices
      */
-    public List<Cartesian3D> getVertices() {
+    public List<Vector3D> getVertices() {
         return Arrays.asList(vertices);
     }
 

@@ -16,10 +16,10 @@
  */
 package org.apache.commons.math4.geometry.euclidean.threed;
 
-import org.apache.commons.math4.geometry.euclidean.oned.Cartesian1D;
+import org.apache.commons.math4.geometry.euclidean.oned.Vector1D;
 import org.apache.commons.math4.geometry.euclidean.twod.Euclidean2D;
 import org.apache.commons.math4.geometry.euclidean.twod.PolygonsSet;
-import org.apache.commons.math4.geometry.euclidean.twod.Cartesian2D;
+import org.apache.commons.math4.geometry.euclidean.twod.Vector2D;
 import org.apache.commons.math4.geometry.partitioning.AbstractSubHyperplane;
 import org.apache.commons.math4.geometry.partitioning.BSPTree;
 import org.apache.commons.math4.geometry.partitioning.Hyperplane;
@@ -74,11 +74,11 @@ public class SubPlane extends AbstractSubHyperplane<Euclidean3D, Euclidean2D> {
         }
 
         // the hyperplanes do intersect
-        Cartesian2D p = thisPlane.toSubSpace(inter.toSpace(Cartesian1D.ZERO));
-        Cartesian2D q = thisPlane.toSubSpace(inter.toSpace(Cartesian1D.ONE));
-        Cartesian3D crossP = Cartesian3D.crossProduct(inter.getDirection(), thisPlane.getNormal());
+        Vector2D p = thisPlane.toSubSpace(inter.toSpace(Vector1D.ZERO));
+        Vector2D q = thisPlane.toSubSpace(inter.toSpace(Vector1D.ONE));
+        Vector3D crossP = Vector3D.crossProduct(inter.getDirection(), thisPlane.getNormal());
         if (crossP.dotProduct(otherPlane.getNormal()) < 0) {
-            final Cartesian2D tmp = p;
+            final Vector2D tmp = p;
             p           = q;
             q           = tmp;
         }

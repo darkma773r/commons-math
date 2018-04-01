@@ -19,7 +19,7 @@ package org.apache.commons.math4.geometry.spherical.oned;
 import org.apache.commons.numbers.angle.PlaneAngleRadians;
 import org.apache.commons.math4.geometry.Point;
 import org.apache.commons.math4.geometry.Space;
-import org.apache.commons.math4.geometry.euclidean.twod.Cartesian2D;
+import org.apache.commons.math4.geometry.euclidean.twod.Vector2D;
 import org.apache.commons.math4.util.FastMath;
 import org.apache.commons.math4.util.MathUtils;
 
@@ -31,7 +31,7 @@ public class S1Point implements Point<Sphere1D> {
 
    // CHECKSTYLE: stop ConstantName
     /** A vector with all coordinates set to NaN. */
-    public static final S1Point NaN = new S1Point(Double.NaN, Cartesian2D.NaN);
+    public static final S1Point NaN = new S1Point(Double.NaN, Vector2D.NaN);
     // CHECKSTYLE: resume ConstantName
 
     /** Serializable UID. */
@@ -41,7 +41,7 @@ public class S1Point implements Point<Sphere1D> {
     private final double alpha;
 
     /** Corresponding 2D normalized vector. */
-    private final Cartesian2D vector;
+    private final Vector2D vector;
 
     /** Simple constructor.
      * Build a vector from its coordinates
@@ -50,14 +50,14 @@ public class S1Point implements Point<Sphere1D> {
      */
     public S1Point(final double alpha) {
         this(PlaneAngleRadians.normalizeBetweenZeroAndTwoPi(alpha),
-             new Cartesian2D(FastMath.cos(alpha), FastMath.sin(alpha)));
+             new Vector2D(FastMath.cos(alpha), FastMath.sin(alpha)));
     }
 
     /** Build a point from its internal components.
      * @param alpha azimuthal angle \( \alpha \)
      * @param vector corresponding vector
      */
-    private S1Point(final double alpha, final Cartesian2D vector) {
+    private S1Point(final double alpha, final Vector2D vector) {
         this.alpha  = alpha;
         this.vector = vector;
     }
@@ -73,7 +73,7 @@ public class S1Point implements Point<Sphere1D> {
     /** Get the corresponding normalized vector in the 2D euclidean space.
      * @return normalized vector
      */
-    public Cartesian2D getVector() {
+    public Vector2D getVector() {
         return vector;
     }
 
@@ -101,7 +101,7 @@ public class S1Point implements Point<Sphere1D> {
      * @return the angular separation between p1 and p2
      */
     public static double distance(S1Point p1, S1Point p2) {
-        return Cartesian2D.angle(p1.vector, p2.vector);
+        return Vector2D.angle(p1.vector, p2.vector);
     }
 
     /**

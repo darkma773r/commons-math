@@ -26,12 +26,9 @@ import org.apache.commons.math4.exception.MathArithmeticException;
  * @see Point
  * @since 3.0
  */
-public interface Vector<S extends Space> {
+public interface Vector<S extends Space> extends Cartesian<S> {
 
-    /** Get the space to which the point belongs.
-     * @return containing space
-     */
-    Space getSpace();
+    Point<S> asPoint();
 
     /** Get the null vector of the vectorial space or origin point of the affine space.
      * @return null vector of the vectorial space or origin point of the affine space
@@ -100,12 +97,6 @@ public interface Vector<S extends Space> {
      * @return a new vector
      */
     Vector<S> scalarMultiply(double a);
-
-    /**
-     * Returns true if any coordinate of this point is NaN; false otherwise
-     * @return  true if any coordinate of this point is NaN; false otherwise
-     */
-    boolean isNaN();
 
     /**
      * Returns true if any coordinate of this vector is infinite and none are NaN;

@@ -22,23 +22,23 @@ import java.util.List;
 import java.util.Objects;
 
 import org.apache.commons.math3.util.FastMath;
-import org.apache.commons.math4.geometry.euclidean.oned.Cartesian1D;
+import org.apache.commons.math4.geometry.euclidean.oned.Vector1D;
 import org.apache.commons.math4.geometry.euclidean.oned.Euclidean1D;
 import org.apache.commons.math4.geometry.euclidean.oned.IntervalsSet;
 import org.apache.commons.math4.geometry.euclidean.oned.OrientedPoint;
 import org.apache.commons.math4.geometry.euclidean.oned.SubOrientedPoint;
 import org.apache.commons.math4.geometry.euclidean.oned.Vector1D;
-import org.apache.commons.math4.geometry.euclidean.threed.Cartesian3D;
+import org.apache.commons.math4.geometry.euclidean.threed.Vector3D;
 import org.apache.commons.math4.geometry.euclidean.threed.Euclidean3D;
 import org.apache.commons.math4.geometry.euclidean.threed.Plane;
 import org.apache.commons.math4.geometry.euclidean.threed.SubPlane;
-import org.apache.commons.math4.geometry.euclidean.threed.Vector3D;
-import org.apache.commons.math4.geometry.euclidean.twod.Cartesian2D;
+import org.apache.commons.math4.geometry.euclidean.threed.Vector3D_;
+import org.apache.commons.math4.geometry.euclidean.twod.Vector2D;
 import org.apache.commons.math4.geometry.euclidean.twod.Euclidean2D;
 import org.apache.commons.math4.geometry.euclidean.twod.Line;
 import org.apache.commons.math4.geometry.euclidean.twod.PolygonsSet;
 import org.apache.commons.math4.geometry.euclidean.twod.SubLine;
-import org.apache.commons.math4.geometry.euclidean.twod.Vector2D;
+import org.apache.commons.math4.geometry.euclidean.twod.Vector2D_;
 import org.apache.commons.math4.geometry.partitioning.BSPTree;
 import org.apache.commons.math4.geometry.partitioning.BSPTreeVisitor;
 import org.junit.Assert;
@@ -65,7 +65,7 @@ public class GeometryTestUtils {
      * @param actual
      * @param tolerance
      */
-    public static void assertVectorEquals(Vector2D expected, Vector2D actual, double tolerance) {
+    public static void assertVectorEquals(Vector2D_ expected, Vector2D_ actual, double tolerance) {
         String msg = "Expected vector to equal " + expected + " but was " + actual + ";";
         Assert.assertEquals(msg, expected.getX(), actual.getX(), tolerance);
         Assert.assertEquals(msg, expected.getY(), actual.getY(), tolerance);
@@ -77,7 +77,7 @@ public class GeometryTestUtils {
      * @param actual
      * @param tolerance
      */
-    public static void assertVectorEquals(Vector3D expected, Vector3D actual, double tolerance) {
+    public static void assertVectorEquals(Vector3D_ expected, Vector3D_ actual, double tolerance) {
         String msg = "Expected vector to equal " + expected + " but was " + actual + ";";
         Assert.assertEquals(msg, expected.getX(), actual.getX(), tolerance);
         Assert.assertEquals(msg, expected.getY(), actual.getY(), tolerance);
@@ -295,7 +295,7 @@ public class GeometryTestUtils {
             Line line = (Line) cut.getHyperplane();
             IntervalsSet remainingRegion = (IntervalsSet) cut.getRemainingRegion();
 
-            write("cut = { angle: " + FastMath.toDegrees(line.getAngle()) + ", origin: " + line.toSpace(Cartesian1D.ZERO) + "}");
+            write("cut = { angle: " + FastMath.toDegrees(line.getAngle()) + ", origin: " + line.toSpace(Vector1D.ZERO) + "}");
             write(", remainingRegion: [");
 
             boolean isFirst = true;
@@ -328,10 +328,10 @@ public class GeometryTestUtils {
             write(", remainingRegion = [");
 
             boolean isFirst = true;
-            for (Cartesian2D[] loop : polygon.getVertices()) {
+            for (Vector2D[] loop : polygon.getVertices()) {
                 // convert to 3-space for easier debugging
-                List<Cartesian3D> loop3 = new ArrayList<>();
-                for (Cartesian2D vertex : loop) {
+                List<Vector3D> loop3 = new ArrayList<>();
+                for (Vector2D vertex : loop) {
                     if (vertex != null) {
                         loop3.add(plane.toSpace(vertex));
                     }
