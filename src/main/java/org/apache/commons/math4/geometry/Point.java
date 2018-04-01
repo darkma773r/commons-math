@@ -29,6 +29,4 @@ public interface Point<S extends Space> extends Cartesian<S> {
      * @return the distance between the instance and p
      */
     double distance(Point<S> p);
-
-    Vector<S> asVector();
 }

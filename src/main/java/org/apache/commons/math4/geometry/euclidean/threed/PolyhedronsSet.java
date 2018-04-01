@@ -27,6 +27,7 @@ import org.apache.commons.math4.exception.util.LocalizedFormats;
 import org.apache.commons.math4.geometry.Point;
 import org.apache.commons.math4.geometry.euclidean.oned.Euclidean1D;
 import org.apache.commons.math4.geometry.euclidean.twod.Euclidean2D;
+import org.apache.commons.math4.geometry.euclidean.twod.Point2D;
 import org.apache.commons.math4.geometry.euclidean.twod.PolygonsSet;
 import org.apache.commons.math4.geometry.euclidean.twod.SubLine;
 import org.apache.commons.math4.geometry.euclidean.twod.Vector2D;
@@ -123,7 +124,7 @@ public class PolyhedronsSet extends AbstractRegion<Euclidean3D, Euclidean2D> {
      * @exception MathIllegalArgumentException if some basic sanity checks fail
      * @since 3.5
      */
-    public PolyhedronsSet(final List<Vector3D> vertices, final List<int[]> facets,
+    public PolyhedronsSet(final List<Point3D> vertices, final List<int[]> facets,
                           final double tolerance) {
         super(buildBoundary(vertices, facets, tolerance), tolerance);
     }
@@ -164,12 +165,12 @@ public class PolyhedronsSet extends AbstractRegion<Euclidean3D, Euclidean2D> {
             // too thin box, build an empty polygons set
             return new BSPTree<>(Boolean.FALSE);
         }
-        final Plane pxMin = new Plane(new Vector3D(xMin, 0,    0),   Vector3D.MINUS_I, tolerance);
-        final Plane pxMax = new Plane(new Vector3D(xMax, 0,    0),   Vector3D.PLUS_I,  tolerance);
-        final Plane pyMin = new Plane(new Vector3D(0,    yMin, 0),   Vector3D.MINUS_J, tolerance);
-        final Plane pyMax = new Plane(new Vector3D(0,    yMax, 0),   Vector3D.PLUS_J,  tolerance);
-        final Plane pzMin = new Plane(new Vector3D(0,    0,   zMin), Vector3D.MINUS_K, tolerance);
-        final Plane pzMax = new Plane(new Vector3D(0,    0,   zMax), Vector3D.PLUS_K,  tolerance);
+        final Plane pxMin = new Plane(new Point3D(xMin, 0,    0),   Vector3D.MINUS_I, tolerance);
+        final Plane pxMax = new Plane(new Point3D(xMax, 0,    0),   Vector3D.PLUS_I,  tolerance);
+        final Plane pyMin = new Plane(new Point3D(0,    yMin, 0),   Vector3D.MINUS_J, tolerance);
+        final Plane pyMax = new Plane(new Point3D(0,    yMax, 0),   Vector3D.PLUS_J,  tolerance);
+        final Plane pzMin = new Plane(new Point3D(0,    0,   zMin), Vector3D.MINUS_K, tolerance);
+        final Plane pzMax = new Plane(new Point3D(0,    0,   zMax), Vector3D.PLUS_K,  tolerance);
         final Region<Euclidean3D> boundary =
         new RegionFactory<Euclidean3D>().buildConvex(pxMin, pxMax, pyMin, pyMax, pzMin, pzMax);
         return boundary.getTree(false);
@@ -183,15 +184,15 @@ public class PolyhedronsSet extends AbstractRegion<Euclidean3D, Euclidean2D> {
      * @exception MathIllegalArgumentException if some basic sanity checks fail
      * @since 3.5
      */
-    private static List<SubHyperplane<Euclidean3D>> buildBoundary(final List<Vector3D> vertices,
+    private static List<SubHyperplane<Euclidean3D>> buildBoundary(final List<Point3D> vertices,
                                                                   final List<int[]> facets,
                                                                   final double tolerance) {
 
         // check vertices distances
         for (int i = 0; i < vertices.size() - 1; ++i) {
-            final Vector3D vi = vertices.get(i);
+            final Point3D vi = vertices.get(i);
             for (int j = i + 1; j < vertices.size(); ++j) {
-                if (Vector3D.distance(vi, vertices.get(j)) <= tolerance) {
+                if (vi.distance(vertices.get(j)) <= tolerance) {
                     throw new MathIllegalArgumentException(LocalizedFormats.CLOSE_VERTICES,
                                                            vi.getX(), vi.getY(), vi.getZ());
                 }
@@ -216,8 +217,8 @@ public class PolyhedronsSet extends AbstractRegion<Euclidean3D, Euclidean2D> {
                         found = found || (v == vA);
                     }
                     if (!found) {
-                        final Vector3D start = vertices.get(vA);
-                        final Vector3D end   = vertices.get(vB);
+                        final Point3D start = vertices.get(vA);
+                        final Point3D end   = vertices.get(vB);
                         throw new MathIllegalArgumentException(LocalizedFormats.EDGE_CONNECTED_TO_ONE_FACET,
                                                                start.getX(), start.getY(), start.getZ(),
                                                                end.getX(),   end.getY(),   end.getZ());
@@ -235,9 +236,9 @@ public class PolyhedronsSet extends AbstractRegion<Euclidean3D, Euclidean2D> {
                                     tolerance);
 
             // check all points are in the plane
-            final Vector2D[] two2Points = new Vector2D[facet.length];
+            final Point2D[] two2Points = new Point2D[facet.length];
             for (int i = 0 ; i < facet.length; ++i) {
-                final Vector3D v = vertices.get(facet[i]);
+                final Point3D v = vertices.get(facet[i]);
                 if (!plane.contains(v)) {
                     throw new MathIllegalArgumentException(LocalizedFormats.OUT_OF_PLANE,
                                                            v.getX(), v.getY(), v.getZ());
@@ -261,7 +262,7 @@ public class PolyhedronsSet extends AbstractRegion<Euclidean3D, Euclidean2D> {
      * @exception MathIllegalArgumentException if some facets have fewer than 3 vertices
      * @since 3.5
      */
-    private static int[][] findReferences(final List<Vector3D> vertices, final List<int[]> facets) {
+    private static int[][] findReferences(final List<Point3D> vertices, final List<int[]> facets) {
 
         // find the maximum number of facets a vertex belongs to
         final int[] nbFacets = new int[vertices.size()];
@@ -306,7 +307,7 @@ public class PolyhedronsSet extends AbstractRegion<Euclidean3D, Euclidean2D> {
      * once in the successors list (which means one facet orientation is wrong)
      * @since 3.5
      */
-    private static int[][] successors(final List<Vector3D> vertices, final List<int[]> facets,
+    private static int[][] successors(final List<Point3D> vertices, final List<int[]> facets,
                                       final int[][] references) {
 
         // create an array large enough
@@ -329,8 +330,8 @@ public class PolyhedronsSet extends AbstractRegion<Euclidean3D, Euclidean2D> {
                 successors[v][k] = facet[(i + 1) % facet.length];
                 for (int l = 0; l < k; ++l) {
                     if (successors[v][l] == successors[v][k]) {
-                        final Vector3D start = vertices.get(v);
-                        final Vector3D end   = vertices.get(successors[v][k]);
+                        final Point3D start = vertices.get(v);
+                        final Point3D end   = vertices.get(successors[v][k]);
                         throw new MathIllegalArgumentException(LocalizedFormats.FACET_ORIENTATION_MISMATCH,
                                                                start.getX(), start.getY(), start.getZ(),
                                                                end.getX(),   end.getY(),   end.getZ());
@@ -465,7 +466,7 @@ public class PolyhedronsSet extends AbstractRegion<Euclidean3D, Euclidean2D> {
                 barycenterSum = Vector3D.NaN;
             } else {
                 final Plane plane = (Plane) facet.getHyperplane();
-                final Vector3D facetBarycenter = plane.toSpace(polygon.getBarycenter());
+                final Vector3D facetBarycenter = plane.toSpace(polygon.getBarycenter()).asVector();
 
                 // the volume here is actually 3x the actual pyramid volume; we'll apply
                 // the final scaling all at once at the end
@@ -487,7 +488,7 @@ public class PolyhedronsSet extends AbstractRegion<Euclidean3D, Euclidean2D> {
      * given point, or null if the line does not intersect any
      * sub-hyperplane
      */
-    public SubHyperplane<Euclidean3D> firstIntersection(final Vector3D point, final Line line) {
+    public SubHyperplane<Euclidean3D> firstIntersection(final Point3D point, final Line line) {
         return recurseFirstIntersection(getTree(true), point, line);
     }
 
@@ -500,7 +501,7 @@ public class PolyhedronsSet extends AbstractRegion<Euclidean3D, Euclidean2D> {
      * sub-hyperplane
      */
     private SubHyperplane<Euclidean3D> recurseFirstIntersection(final BSPTree<Euclidean3D> node,
-                                                                final Vector3D point,
+                                                                final Point3D point,
                                                                 final Line line) {
 
         final SubHyperplane<Euclidean3D> cut = node.getCut();
@@ -540,7 +541,7 @@ public class PolyhedronsSet extends AbstractRegion<Euclidean3D, Euclidean2D> {
 
         if (!in) {
             // search in the cut hyperplane
-            final Vector3D hit3D = plane.intersection(line);
+            final Point3D hit3D = plane.intersection(line);
             if (hit3D != null && line.getAbscissa(hit3D) > line.getAbscissa(point)) {
                 final SubHyperplane<Euclidean3D> facet = boundaryFacet(hit3D, node);
                 if (facet != null) {
@@ -560,9 +561,9 @@ public class PolyhedronsSet extends AbstractRegion<Euclidean3D, Euclidean2D> {
      * @return the boundary facet this points belongs to (or null if it
      * does not belong to any boundary facet)
      */
-    private SubHyperplane<Euclidean3D> boundaryFacet(final Vector3D point,
+    private SubHyperplane<Euclidean3D> boundaryFacet(final Point3D point,
                                                      final BSPTree<Euclidean3D> node) {
-        final Vector2D point2D = ((Plane) node.getCut().getHyperplane()).toSubSpace(point);
+        final Point2D point2D = ((Plane) node.getCut().getHyperplane()).toSubSpace(point);
         @SuppressWarnings("unchecked")
         final BoundaryAttribute<Euclidean3D> attribute =
             (BoundaryAttribute<Euclidean3D>) node.getAttribute();
@@ -583,7 +584,7 @@ public class PolyhedronsSet extends AbstractRegion<Euclidean3D, Euclidean2D> {
      * @param rotation vectorial rotation operator
      * @return a new instance representing the rotated region
      */
-    public PolyhedronsSet rotate(final Vector3D center, final Rotation rotation) {
+    public PolyhedronsSet rotate(final Point3D center, final Rotation rotation) {
         return (PolyhedronsSet) applyTransform(new RotationTransform(center, rotation));
     }
 
@@ -591,7 +592,7 @@ public class PolyhedronsSet extends AbstractRegion<Euclidean3D, Euclidean2D> {
     private static class RotationTransform implements Transform<Euclidean3D, Euclidean2D> {
 
         /** Center point of the rotation. */
-        private final Vector3D   center;
+        private final Point3D   center;
 
         /** Vectorial rotation. */
         private final Rotation   rotation;
@@ -606,16 +607,16 @@ public class PolyhedronsSet extends AbstractRegion<Euclidean3D, Euclidean2D> {
          * @param center center point of the rotation
          * @param rotation vectorial rotation
          */
-        RotationTransform(final Vector3D center, final Rotation rotation) {
+        RotationTransform(final Point3D center, final Rotation rotation) {
             this.center   = center;
             this.rotation = rotation;
         }
 
         /** {@inheritDoc} */
         @Override
-        public Vector3D apply(final Point<Euclidean3D> point) {
-            final Vector3D delta = ((Vector3D) point).subtract(center);
-            return new Vector3D(1.0, center, 1.0, rotation.applyTo(delta));
+        public Point3D apply(final Point<Euclidean3D> point) {
+            final Vector3D delta = ((Point3D) point).subtract(center);
+            return new Point3D(1.0, center, 1.0, rotation.applyTo(delta));
         }
 
         /** {@inheritDoc} */
@@ -634,12 +635,12 @@ public class PolyhedronsSet extends AbstractRegion<Euclidean3D, Euclidean2D> {
 
                 final Plane    oPlane = (Plane) original;
                 final Plane    tPlane = (Plane) transformed;
-                final Vector3D p00    = oPlane.getOrigin();
-                final Vector3D p10    = oPlane.toSpace(new Vector2D(1.0, 0.0));
-                final Vector3D p01    = oPlane.toSpace(new Vector2D(0.0, 1.0));
-                final Vector2D tP00   = tPlane.toSubSpace(apply(p00));
-                final Vector2D tP10   = tPlane.toSubSpace(apply(p10));
-                final Vector2D tP01   = tPlane.toSubSpace(apply(p01));
+                final Point3D p00    = oPlane.getOrigin();
+                final Point3D p10    = oPlane.toSpace(new Point2D(1.0, 0.0));
+                final Point3D p01    = oPlane.toSpace(new Point2D(0.0, 1.0));
+                final Point2D tP00   = tPlane.toSubSpace(apply(p00));
+                final Point2D tP10   = tPlane.toSubSpace(apply(p10));
+                final Point2D tP01   = tPlane.toSubSpace(apply(p01));
 
                 cachedOriginal  = (Plane) original;
                 cachedTransform =
@@ -686,8 +687,8 @@ public class PolyhedronsSet extends AbstractRegion<Euclidean3D, Euclidean2D> {
 
         /** {@inheritDoc} */
         @Override
-        public Vector3D apply(final Point<Euclidean3D> point) {
-            return new Vector3D(1.0, (Vector3D) point, 1.0, translation);
+        public Point3D apply(final Point<Euclidean3D> point) {
+            return new Point3D(1.0, (Vector3D) point, 1.0, translation);
         }
 
         /** {@inheritDoc} */
@@ -706,7 +707,7 @@ public class PolyhedronsSet extends AbstractRegion<Euclidean3D, Euclidean2D> {
 
                 final Plane   oPlane = (Plane) original;
                 final Plane   tPlane = (Plane) transformed;
-                final Vector2D shift  = tPlane.toSubSpace(apply(oPlane.getOrigin()));
+                final Point2D shift  = tPlane.toSubSpace(apply(oPlane.getOrigin()));
 
                 cachedOriginal  = (Plane) original;
                 cachedTransform =

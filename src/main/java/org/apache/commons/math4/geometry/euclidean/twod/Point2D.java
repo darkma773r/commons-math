@@ -22,6 +22,16 @@ public class Point2D extends Cartesian2D implements Point<Euclidean2D> {
                 a1 * u1.y + a2 * u2.y);
     }
 
+    public Point2D add(Vector<Euclidean2D> v) {
+        final Cartesian2D c = (Cartesian2D) v;
+        return new Point2D(this.x + c.x, this.y + c.y);
+    }
+
+    public Vector2D subtract(Point<Euclidean2D> p) {
+        final Cartesian2D c = (Cartesian2D) p;
+        return new Vector2D(this.x - c.x, this.y - c.y);
+    }
+
     @Override
     public double distance(Point<Euclidean2D> p) {
         return distance((Point2D) p);
@@ -33,7 +43,6 @@ public class Point2D extends Cartesian2D implements Point<Euclidean2D> {
         return FastMath.sqrt(dx * dx + dy * dy);
     }
 
-    @Override
     public Vector2D asVector() {
         return new Vector2D(x, y);
     }

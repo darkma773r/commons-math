@@ -24,7 +24,9 @@ import org.apache.commons.math4.geometry.Point;
 import org.apache.commons.math4.geometry.euclidean.oned.Euclidean1D;
 import org.apache.commons.math4.geometry.euclidean.oned.Interval;
 import org.apache.commons.math4.geometry.euclidean.oned.IntervalsSet;
+import org.apache.commons.math4.geometry.euclidean.oned.Point1D;
 import org.apache.commons.math4.geometry.euclidean.oned.Vector1D;
+import org.apache.commons.math4.geometry.euclidean.twod.Point2D;
 import org.apache.commons.math4.geometry.partitioning.Region.Location;
 
 /** This class represents a subset of a {@link Line}.
@@ -54,7 +56,7 @@ public class SubLine {
      * @exception MathIllegalArgumentException if the points are equal
      * @since 3.3
      */
-    public SubLine(final Vector3D start, final Vector3D end, final double tolerance)
+    public SubLine(final Point3D start, final Point3D end, final double tolerance)
         throws MathIllegalArgumentException {
         this(new Line(start, end, tolerance), buildIntervalSet(start, end, tolerance));
     }
@@ -88,8 +90,8 @@ public class SubLine {
         final List<Segment> segments = new ArrayList<>(list.size());
 
         for (final Interval interval : list) {
-            final Vector3D start = line.toSpace(new Vector1D(interval.getInf()));
-            final Vector3D end   = line.toSpace(new Vector1D(interval.getSup()));
+            final Point3D start = line.toSpace(new Point1D(interval.getInf()));
+            final Point3D end   = line.toSpace(new Point1D(interval.getSup()));
             segments.add(new Segment(start, end, line));
         }
 
@@ -111,19 +113,19 @@ public class SubLine {
      * occurring on endpoints lead to null being returned
      * @return the intersection point if there is one, null if the sub-lines don't intersect
      */
-    public Vector3D intersection(final SubLine subLine, final boolean includeEndPoints) {
+    public Point3D intersection(final SubLine subLine, final boolean includeEndPoints) {
 
         // compute the intersection on infinite line
-        Vector3D v1D = line.intersection(subLine.line);
+        Point3D v1D = line.intersection(subLine.line);
         if (v1D == null) {
             return null;
         }
 
         // check location of point with respect to first sub-line
-        Location loc1 = remainingRegion.checkPoint((Point<Euclidean1D>) line.toSubSpace((Point<Euclidean3D>) v1D));
+        Location loc1 = remainingRegion.checkPoint(line.toSubSpace((Point<Euclidean3D>) v1D));
 
         // check location of point with respect to second sub-line
-        Location loc2 = subLine.remainingRegion.checkPoint((Point<Euclidean1D>) subLine.line.toSubSpace((Point<Euclidean3D>) v1D));
+        Location loc2 = subLine.remainingRegion.checkPoint(subLine.line.toSubSpace((Point<Euclidean3D>) v1D));
 
         if (includeEndPoints) {
             return ((loc1 != Location.OUTSIDE) && (loc2 != Location.OUTSIDE)) ? v1D : null;
@@ -140,11 +142,11 @@ public class SubLine {
      * @param tolerance tolerance below which points are considered identical
      * @exception MathIllegalArgumentException if the points are equal
      */
-    private static IntervalsSet buildIntervalSet(final Vector3D start, final Vector3D end, final double tolerance)
+    private static IntervalsSet buildIntervalSet(final Point3D start, final Point3D end, final double tolerance)
         throws MathIllegalArgumentException {
         final Line line = new Line(start, end, tolerance);
-        return new IntervalsSet(line.toSubSpace((Point<Euclidean3D>) start).getX(),
-                                line.toSubSpace((Point<Euclidean3D>) end).getX(),
+        return new IntervalsSet(line.toSubSpace(start).getX(),
+                                line.toSubSpace(end).getX(),
                                 tolerance);
     }
 

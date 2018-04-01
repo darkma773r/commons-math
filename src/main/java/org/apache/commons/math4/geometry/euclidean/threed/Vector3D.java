@@ -129,10 +129,7 @@ public class Vector3D extends Cartesian3D implements Vector<Euclidean3D> {
     * @param u2 second base (unscaled) vector
     */
    public Vector3D(double a1, Vector3D u1, double a2, Vector3D u2) {
-       super(LinearCombination.value(a1, u1.x, a2, u2.x),
-               LinearCombination.value(a1, u1.y, a2, u2.y),
-               LinearCombination.value(a1, u1.z, a2, u2.z)
-               );
+       super(a1, u1, a2, u2);
    }
 
    /** Linear constructor

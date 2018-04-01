@@ -19,10 +19,9 @@ package org.apache.commons.math4.geometry.euclidean.threed;
 import org.apache.commons.math4.exception.MathIllegalArgumentException;
 import org.apache.commons.math4.exception.util.LocalizedFormats;
 import org.apache.commons.math4.geometry.Point;
-import org.apache.commons.math4.geometry.Vector;
 import org.apache.commons.math4.geometry.euclidean.oned.Euclidean1D;
 import org.apache.commons.math4.geometry.euclidean.oned.IntervalsSet;
-import org.apache.commons.math4.geometry.euclidean.oned.Vector1D;
+import org.apache.commons.math4.geometry.euclidean.oned.Point1D;
 import org.apache.commons.math4.geometry.partitioning.Embedding;
 import org.apache.commons.math4.util.FastMath;
 import org.apache.commons.numbers.core.Precision;
@@ -85,7 +84,7 @@ public class Line implements Embedding<Euclidean3D, Euclidean1D> {
             throw new MathIllegalArgumentException(LocalizedFormats.ZERO_NORM);
         }
         this.direction = new Vector3D(1.0 / FastMath.sqrt(norm2), delta);
-        zero = new Point3D(1.0, p1, -p1.dotProduct(delta) / norm2, delta);
+        zero = new Point3D(1.0, p1, -p1.asVector().dotProduct(delta) / norm2, delta);
     }
 
     /** Get the tolerance below which points are considered identical.
@@ -115,7 +114,7 @@ public class Line implements Embedding<Euclidean3D, Euclidean1D> {
     /** Get the line point closest to the origin.
      * @return line point closest to the origin
      */
-    public Vector3D getOrigin() {
+    public Point3D getOrigin() {
         return zero;
     }
 
@@ -126,7 +125,7 @@ public class Line implements Embedding<Euclidean3D, Euclidean1D> {
      * @param point point to check
      * @return abscissa of the point
      */
-    public double getAbscissa(final Vector3D point) {
+    public double getAbscissa(final Point3D point) {
         return point.subtract(zero).dotProduct(direction);
     }
 
@@ -134,42 +133,24 @@ public class Line implements Embedding<Euclidean3D, Euclidean1D> {
      * @param abscissa desired abscissa for the point
      * @return one point belonging to the line, at specified abscissa
      */
-    public Vector3D pointAt(final double abscissa) {
-        return new Vector3D(1.0, zero, abscissa, direction);
-    }
-
-    /** Transform a space point into a sub-space point.
-     * @param vector n-dimension point of the space
-     * @return (n-1)-dimension point of the sub-space corresponding to
-     * the specified space point
-     */
-    public Vector1D toSubSpace(Vector<Euclidean3D> vector) {
-        return toSubSpace((Point<Euclidean3D>) vector);
-    }
-
-    /** Transform a sub-space point into a space point.
-     * @param vector (n-1)-dimension point of the sub-space
-     * @return n-dimension point of the space corresponding to the
-     * specified sub-space point
-     */
-    public Vector3D toSpace(Vector<Euclidean1D> vector) {
-        return toSpace((Point<Euclidean1D>) vector);
+    public Point3D pointAt(final double abscissa) {
+        return new Point3D(1.0, zero, abscissa, direction.asPoint());
     }
 
     /** {@inheritDoc}
      * @see #getAbscissa(Vector3D)
      */
     @Override
-    public Vector1D toSubSpace(final Point<Euclidean3D> point) {
-        return toSubSpace((Vector3D) point);
+    public Point1D toSubSpace(final Point<Euclidean3D> point) {
+        return toSubSpace((Point3D) point);
     }
 
     /** {@inheritDoc}
      * @see #pointAt(double)
      */
     @Override
-    public Vector3D toSpace(final Point<Euclidean1D> point) {
-        return toSpace((Vector1D) point);
+    public Point3D toSpace(final Point<Euclidean1D> point) {
+        return toSpace((Point1D) point);
     }
 
     /** Transform a space point into a sub-space point.
@@ -177,8 +158,8 @@ public class Line implements Embedding<Euclidean3D, Euclidean1D> {
      * @return (n-1)-dimension point of the sub-space corresponding to
      * the specified space point
      */
-    public Vector1D toSubSpace(final Vector3D point) {
-        return new Vector1D(getAbscissa(point));
+    public Point1D toSubSpace(final Point3D point) {
+        return new Point1D(getAbscissa(point));
     }
 
     /** Transform a sub-space point into a space point.
@@ -186,7 +167,7 @@ public class Line implements Embedding<Euclidean3D, Euclidean1D> {
      * @return n-dimension point of the space corresponding to the
      * specified sub-space point
      */
-    public Vector3D toSpace(final Vector1D point) {
+    public Point3D toSpace(final Point1D point) {
         return pointAt(point.getX());
     }
 
@@ -206,7 +187,7 @@ public class Line implements Embedding<Euclidean3D, Euclidean1D> {
      * @param p point to check
      * @return true if p belongs to the line
      */
-    public boolean contains(final Vector3D p) {
+    public boolean contains(final Point3D p) {
         return distance(p) < tolerance;
     }
 
@@ -214,7 +195,7 @@ public class Line implements Embedding<Euclidean3D, Euclidean1D> {
      * @param p to check
      * @return distance between the instance and the point
      */
-    public double distance(final Vector3D p) {
+    public double distance(final Point3D p) {
         final Vector3D d = p.subtract(zero);
         final Vector3D n = new Vector3D(1.0, d, -d.dotProduct(direction), direction);
         return n.getNorm();
@@ -244,7 +225,7 @@ public class Line implements Embedding<Euclidean3D, Euclidean1D> {
      * @param line line to check against the instance
      * @return point of the instance closest to another line
      */
-    public Vector3D closestPoint(final Line line) {
+    public Point3D closestPoint(final Line line) {
 
         final double cos = direction.dotProduct(line.direction);
         final double n = 1 - cos * cos;
@@ -257,7 +238,7 @@ public class Line implements Embedding<Euclidean3D, Euclidean1D> {
         final double a        = delta0.dotProduct(direction);
         final double b        = delta0.dotProduct(line.direction);
 
-        return new Vector3D(1, zero, (a - b * cos) / n, direction);
+        return new Point3D(1, zero, (a - b * cos) / n, direction);
 
     }
 
@@ -266,8 +247,8 @@ public class Line implements Embedding<Euclidean3D, Euclidean1D> {
      * @return intersection point of the instance and the other line
      * or null if there are no intersection points
      */
-    public Vector3D intersection(final Line line) {
-        final Vector3D closest = closestPoint(line);
+    public Point3D intersection(final Line line) {
+        final Point3D closest = closestPoint(line);
         return line.contains(closest) ? closest : null;
     }
 

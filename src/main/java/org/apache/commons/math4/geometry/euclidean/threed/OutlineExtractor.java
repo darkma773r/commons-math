@@ -20,6 +20,7 @@ import java.util.ArrayList;
 
 import org.apache.commons.math4.geometry.Point;
 import org.apache.commons.math4.geometry.euclidean.twod.Euclidean2D;
+import org.apache.commons.math4.geometry.euclidean.twod.Point2D;
 import org.apache.commons.math4.geometry.euclidean.twod.PolygonsSet;
 import org.apache.commons.math4.geometry.euclidean.twod.Vector2D;
 import org.apache.commons.math4.geometry.partitioning.AbstractSubHyperplane;
@@ -60,7 +61,7 @@ public class OutlineExtractor {
      * @param polyhedronsSet polyhedrons set whose outline must be extracted
      * @return an outline, as an array of loops.
      */
-    public Vector2D[][] getOutline(final PolyhedronsSet polyhedronsSet) {
+    public Point2D[][] getOutline(final PolyhedronsSet polyhedronsSet) {
 
         // project all boundary facets into one polygons set
         final BoundaryProjector projector = new BoundaryProjector(polyhedronsSet.getTolerance());
@@ -68,9 +69,9 @@ public class OutlineExtractor {
         final PolygonsSet projected = projector.getProjected();
 
         // Remove the spurious intermediate vertices from the outline
-        final Vector2D[][] outline = projected.getVertices();
+        final Point2D[][] outline = projected.getVertices();
         for (int i = 0; i < outline.length; ++i) {
-            final Vector2D[] rawLoop = outline[i];
+            final Point2D[] rawLoop = outline[i];
             int end = rawLoop.length;
             int j = 0;
             while (j < end) {
@@ -87,7 +88,7 @@ public class OutlineExtractor {
             }
             if (end != rawLoop.length) {
                 // resize the array
-                outline[i] = new Vector2D[end];
+                outline[i] = new Point2D[end];
                 System.arraycopy(rawLoop, 0, outline[i], 0, end);
             }
         }
@@ -104,10 +105,10 @@ public class OutlineExtractor {
      * @param i index of the point to check (must be between 0 and n-1)
      * @return true if the point is exactly between its neighbors
      */
-    private boolean pointIsBetween(final Vector2D[] loop, final int n, final int i) {
-        final Vector2D previous = loop[(i + n - 1) % n];
-        final Vector2D current  = loop[i];
-        final Vector2D next     = loop[(i + 1) % n];
+    private boolean pointIsBetween(final Point2D[] loop, final int n, final int i) {
+        final Point2D previous = loop[(i + n - 1) % n];
+        final Point2D current  = loop[i];
+        final Point2D next     = loop[(i + 1) % n];
         final double dx1       = current.getX() - previous.getX();
         final double dy1       = current.getY() - previous.getY();
         final double dx2       = next.getX()    - current.getX();
@@ -174,16 +175,16 @@ public class OutlineExtractor {
 
             final double scal = plane.getNormal().dotProduct(w);
             if (FastMath.abs(scal) > 1.0e-3) {
-                Vector2D[][] vertices =
+                Point2D[][] vertices =
                     ((PolygonsSet) absFacet.getRemainingRegion()).getVertices();
 
                 if ((scal < 0) ^ reversed) {
                     // the facet is seen from the inside,
                     // we need to invert its boundary orientation
-                    final Vector2D[][] newVertices = new Vector2D[vertices.length][];
+                    final Point2D[][] newVertices = new Point2D[vertices.length][];
                     for (int i = 0; i < vertices.length; ++i) {
-                        final Vector2D[] loop = vertices[i];
-                        final Vector2D[] newLoop = new Vector2D[loop.length];
+                        final Point2D[] loop = vertices[i];
+                        final Point2D[] newLoop = new Point2D[loop.length];
                         if (loop[0] == null) {
                             newLoop[0] = null;
                             for (int j = 1; j < loop.length; ++j) {
@@ -204,17 +205,17 @@ public class OutlineExtractor {
 
                 // compute the projection of the facet in the outline plane
                 final ArrayList<SubHyperplane<Euclidean2D>> edges = new ArrayList<>();
-                for (Vector2D[] loop : vertices) {
+                for (Point2D[] loop : vertices) {
                     final boolean closed = loop[0] != null;
                     int previous         = closed ? (loop.length - 1) : 1;
-                    Vector3D previous3D  = plane.toSpace(loop[previous]);
+                    Vector3D previous3D  = plane.toSpace(loop[previous]).asVector();
                     int current          = (previous + 1) % loop.length;
-                    Vector2D pPoint       = new Vector2D(previous3D.dotProduct(u),
+                    Point2D pPoint       = new Point2D(previous3D.dotProduct(u),
                                                          previous3D.dotProduct(v));
                     while (current < loop.length) {
 
-                        final Vector3D current3D = plane.toSpace((Point<Euclidean2D>) loop[current]);
-                        final Vector2D  cPoint    = new Vector2D(current3D.dotProduct(u),
+                        final Vector3D current3D = plane.toSpace(loop[current]).asVector();
+                        final Point2D  cPoint    = new Point2D(current3D.dotProduct(u),
                                                                  current3D.dotProduct(v));
                         final org.apache.commons.math4.geometry.euclidean.twod.Line line =
                             new org.apache.commons.math4.geometry.euclidean.twod.Line(pPoint, cPoint, tolerance);
