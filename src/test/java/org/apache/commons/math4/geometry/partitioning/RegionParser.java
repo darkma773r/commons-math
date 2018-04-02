@@ -24,15 +24,16 @@ import org.apache.commons.math4.geometry.Space;
 import org.apache.commons.math4.geometry.euclidean.oned.Euclidean1D;
 import org.apache.commons.math4.geometry.euclidean.oned.IntervalsSet;
 import org.apache.commons.math4.geometry.euclidean.oned.OrientedPoint;
-import org.apache.commons.math4.geometry.euclidean.oned.Vector1D;
+import org.apache.commons.math4.geometry.euclidean.oned.Point1D;
 import org.apache.commons.math4.geometry.euclidean.threed.Euclidean3D;
 import org.apache.commons.math4.geometry.euclidean.threed.Plane;
+import org.apache.commons.math4.geometry.euclidean.threed.Point3D;
 import org.apache.commons.math4.geometry.euclidean.threed.PolyhedronsSet;
 import org.apache.commons.math4.geometry.euclidean.threed.Vector3D;
 import org.apache.commons.math4.geometry.euclidean.twod.Euclidean2D;
 import org.apache.commons.math4.geometry.euclidean.twod.Line;
+import org.apache.commons.math4.geometry.euclidean.twod.Point2D;
 import org.apache.commons.math4.geometry.euclidean.twod.PolygonsSet;
-import org.apache.commons.math4.geometry.euclidean.twod.Vector2D;
 import org.apache.commons.math4.geometry.spherical.oned.ArcsSet;
 import org.apache.commons.math4.geometry.spherical.oned.LimitAngle;
 import org.apache.commons.math4.geometry.spherical.oned.S1Point;
@@ -111,7 +112,7 @@ public class RegionParser {
             @Override
             public OrientedPoint parseHyperplane()
                 throws IOException, ParseException {
-                return new OrientedPoint(new Vector1D(getNumber()), getBoolean(), getNumber());
+                return new OrientedPoint(new Point1D(getNumber()), getBoolean(), getNumber());
             }
 
         };
@@ -132,7 +133,7 @@ public class RegionParser {
             @Override
             public Line parseHyperplane()
                 throws IOException, ParseException {
-                return new Line(new Vector2D(getNumber(), getNumber()), getNumber(), getNumber());
+                return new Line(new Point2D(getNumber(), getNumber()), getNumber(), getNumber());
             }
 
         };
@@ -153,7 +154,7 @@ public class RegionParser {
             @Override
             public Plane parseHyperplane()
                 throws IOException, ParseException {
-                return new Plane(new Vector3D(getNumber(), getNumber(), getNumber()),
+                return new Plane(new Point3D(getNumber(), getNumber(), getNumber()),
                                  new Vector3D(getNumber(), getNumber(), getNumber()),
                                  getNumber());
             }

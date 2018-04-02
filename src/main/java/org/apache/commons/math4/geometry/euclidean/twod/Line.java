@@ -242,7 +242,7 @@ public class Line implements Hyperplane<Euclidean2D>, Embedding<Euclidean2D, Euc
     /** {@inheritDoc} */
     @Override
     public Point1D toSubSpace(final Point<Euclidean2D> point) {
-        return toSubSpace(point);
+        return toSubSpace((Point2D) point);
     }
 
     /** {@inheritDoc} */
@@ -537,7 +537,7 @@ public class Line implements Hyperplane<Euclidean2D>, Embedding<Euclidean2D, Euc
         /** {@inheritDoc} */
         @Override
         public Point2D apply(final Point<Euclidean2D> point) {
-            final Vector2D p2D = (Vector2D) point;
+            final Point2D p2D = (Point2D) point;
             final double  x   = p2D.getX();
             final double  y   = p2D.getY();
             return new Point2D(LinearCombination.value(cXX, x, cXY, y, cX1, 1),

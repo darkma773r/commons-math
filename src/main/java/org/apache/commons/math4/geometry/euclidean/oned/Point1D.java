@@ -5,6 +5,8 @@ import org.apache.commons.math4.geometry.Vector;
 
 public class Point1D extends Cartesian1D implements Point<Euclidean1D> {
 
+    public static final Point1D NaN = new Point1D(Double.NaN);
+
     public static final Point1D ZERO = new Point1D(0.0);
 
     public static final Point1D ONE = new Point1D(1.0);

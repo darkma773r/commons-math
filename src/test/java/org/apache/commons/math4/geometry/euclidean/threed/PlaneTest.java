@@ -29,37 +29,37 @@ public class PlaneTest {
 
     @Test
     public void testContains() throws MathArithmeticException {
-        Plane p = new Plane(new Vector3D(0, 0, 1), new Vector3D(0, 0, 1), 1.0e-10);
-        Assert.assertTrue(p.contains(new Vector3D(0, 0, 1)));
-        Assert.assertTrue(p.contains(new Vector3D(17, -32, 1)));
-        Assert.assertTrue(! p.contains(new Vector3D(17, -32, 1.001)));
+        Plane p = new Plane(new Point3D(0, 0, 1), new Vector3D(0, 0, 1), 1.0e-10);
+        Assert.assertTrue(p.contains(new Point3D(0, 0, 1)));
+        Assert.assertTrue(p.contains(new Point3D(17, -32, 1)));
+        Assert.assertTrue(! p.contains(new Point3D(17, -32, 1.001)));
     }
 
     @Test
     public void testOffset() throws MathArithmeticException {
-        Vector3D p1 = new Vector3D(1, 1, 1);
+        Point3D p1 = new Point3D(1, 1, 1);
         Plane p = new Plane(p1, new Vector3D(0.2, 0, 0), 1.0e-10);
-        Assert.assertEquals(-5.0, p.getOffset(new Vector3D(-4, 0, 0)), 1.0e-10);
-        Assert.assertEquals(+5.0, p.getOffset(new Vector3D(6, 10, -12)), 1.0e-10);
+        Assert.assertEquals(-5.0, p.getOffset(new Point3D(-4, 0, 0)), 1.0e-10);
+        Assert.assertEquals(+5.0, p.getOffset(new Point3D(6, 10, -12)), 1.0e-10);
         Assert.assertEquals(0.3,
-                            p.getOffset(new Vector3D(1.0, p1, 0.3, p.getNormal())),
+                            p.getOffset(new Point3D(1.0, p1, 0.3, p.getNormal())),
                             1.0e-10);
         Assert.assertEquals(-0.3,
-                            p.getOffset(new Vector3D(1.0, p1, -0.3, p.getNormal())),
+                            p.getOffset(new Point3D(1.0, p1, -0.3, p.getNormal())),
                             1.0e-10);
     }
 
     @Test
     public void testPoint() throws MathArithmeticException {
-        Plane p = new Plane(new Vector3D(2, -3, 1), new Vector3D(1, 4, 9), 1.0e-10);
+        Plane p = new Plane(new Point3D(2, -3, 1), new Vector3D(1, 4, 9), 1.0e-10);
         Assert.assertTrue(p.contains(p.getOrigin()));
     }
 
     @Test
     public void testThreePoints() throws MathArithmeticException {
-        Vector3D p1 = new Vector3D(1.2, 3.4, -5.8);
-        Vector3D p2 = new Vector3D(3.4, -5.8, 1.2);
-        Vector3D p3 = new Vector3D(-2.0, 4.3, 0.7);
+        Point3D p1 = new Point3D(1.2, 3.4, -5.8);
+        Point3D p2 = new Point3D(3.4, -5.8, 1.2);
+        Point3D p3 = new Point3D(-2.0, 4.3, 0.7);
         Plane    p  = new Plane(p1, p2, p3, 1.0e-10);
         Assert.assertTrue(p.contains(p1));
         Assert.assertTrue(p.contains(p2));
@@ -68,9 +68,9 @@ public class PlaneTest {
 
     @Test
     public void testRotate() throws MathArithmeticException, MathIllegalArgumentException {
-        Vector3D p1 = new Vector3D(1.2, 3.4, -5.8);
-        Vector3D p2 = new Vector3D(3.4, -5.8, 1.2);
-        Vector3D p3 = new Vector3D(-2.0, 4.3, 0.7);
+        Point3D p1 = new Point3D(1.2, 3.4, -5.8);
+        Point3D p2 = new Point3D(3.4, -5.8, 1.2);
+        Point3D p3 = new Point3D(-2.0, 4.3, 0.7);
         Plane    p  = new Plane(p1, p2, p3, 1.0e-10);
         Vector3D oldNormal = p.getNormal();
 
@@ -93,9 +93,9 @@ public class PlaneTest {
 
     @Test
     public void testTranslate() throws MathArithmeticException {
-        Vector3D p1 = new Vector3D(1.2, 3.4, -5.8);
-        Vector3D p2 = new Vector3D(3.4, -5.8, 1.2);
-        Vector3D p3 = new Vector3D(-2.0, 4.3, 0.7);
+        Point3D p1 = new Point3D(1.2, 3.4, -5.8);
+        Point3D p2 = new Point3D(3.4, -5.8, 1.2);
+        Point3D p3 = new Point3D(-2.0, 4.3, 0.7);
         Plane    p  = new Plane(p1, p2, p3, 1.0e-10);
 
         p = p.translate(new Vector3D(2.0, p.getU(), -1.5, p.getV()));
@@ -117,22 +117,22 @@ public class PlaneTest {
 
     @Test
     public void testIntersection() throws MathArithmeticException, MathIllegalArgumentException {
-        Plane p = new Plane(new Vector3D(1, 2, 3), new Vector3D(-4, 1, -5), 1.0e-10);
-        Line  l = new Line(new Vector3D(0.2, -3.5, 0.7), new Vector3D(1.2, -2.5, -0.3), 1.0e-10);
-        Vector3D point = p.intersection(l);
+        Plane p = new Plane(new Point3D(1, 2, 3), new Vector3D(-4, 1, -5), 1.0e-10);
+        Line  l = new Line(new Point3D(0.2, -3.5, 0.7), new Point3D(1.2, -2.5, -0.3), 1.0e-10);
+        Point3D point = p.intersection(l);
         Assert.assertTrue(p.contains(point));
         Assert.assertTrue(l.contains(point));
-        Assert.assertNull(p.intersection(new Line(new Vector3D(10, 10, 10),
-                                                  new Vector3D(10, 10, 10).add(p.getNormal().orthogonal()),
+        Assert.assertNull(p.intersection(new Line(new Point3D(10, 10, 10),
+                                                  new Point3D(10, 10, 10).add(p.getNormal().orthogonal()),
                                                   1.0e-10)));
     }
 
     @Test
     public void testIntersection2() throws MathArithmeticException {
-        Vector3D p1  = new Vector3D (1.2, 3.4, -5.8);
-        Vector3D p2  = new Vector3D (3.4, -5.8, 1.2);
-        Plane    pA  = new Plane(p1, p2, new Vector3D (-2.0, 4.3, 0.7), 1.0e-10);
-        Plane    pB  = new Plane(p1, new Vector3D (11.4, -3.8, 5.1), p2, 1.0e-10);
+        Point3D p1  = new Point3D (1.2, 3.4, -5.8);
+        Point3D p2  = new Point3D (3.4, -5.8, 1.2);
+        Plane    pA  = new Plane(p1, p2, new Point3D (-2.0, 4.3, 0.7), 1.0e-10);
+        Plane    pB  = new Plane(p1, new Point3D (11.4, -3.8, 5.1), p2, 1.0e-10);
         Line     l   = pA.intersection(pB);
         Assert.assertTrue(l.contains(p1));
         Assert.assertTrue(l.contains(p2));
@@ -141,11 +141,11 @@ public class PlaneTest {
 
     @Test
     public void testIntersection3() throws MathArithmeticException {
-        Vector3D reference = new Vector3D (1.2, 3.4, -5.8);
+        Point3D reference = new Point3D (1.2, 3.4, -5.8);
         Plane p1 = new Plane(reference, new Vector3D(1, 3, 3), 1.0e-10);
         Plane p2 = new Plane(reference, new Vector3D(-2, 4, 0), 1.0e-10);
         Plane p3 = new Plane(reference, new Vector3D(7, 0, -4), 1.0e-10);
-        Vector3D p = Plane.intersection(p1, p2, p3);
+        Point3D p = Plane.intersection(p1, p2, p3);
         Assert.assertEquals(reference.getX(), p.getX(), 1.0e-10);
         Assert.assertEquals(reference.getY(), p.getY(), 1.0e-10);
         Assert.assertEquals(reference.getZ(), p.getZ(), 1.0e-10);
@@ -153,11 +153,11 @@ public class PlaneTest {
 
     @Test
     public void testSimilar() throws MathArithmeticException {
-        Vector3D p1  = new Vector3D (1.2, 3.4, -5.8);
-        Vector3D p2  = new Vector3D (3.4, -5.8, 1.2);
-        Vector3D p3  = new Vector3D (-2.0, 4.3, 0.7);
+        Point3D p1  = new Point3D (1.2, 3.4, -5.8);
+        Point3D p2  = new Point3D (3.4, -5.8, 1.2);
+        Point3D p3  = new Point3D (-2.0, 4.3, 0.7);
         Plane    pA  = new Plane(p1, p2, p3, 1.0e-10);
-        Plane    pB  = new Plane(p1, new Vector3D (11.4, -3.8, 5.1), p2, 1.0e-10);
+        Plane    pB  = new Plane(p1, new Point3D (11.4, -3.8, 5.1), p2, 1.0e-10);
         Assert.assertTrue(! pA.isSimilarTo(pB));
         Assert.assertTrue(pA.isSimilarTo(pA));
         Assert.assertTrue(pA.isSimilarTo(new Plane(p1, p3, p2, 1.0e-10)));

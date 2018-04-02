@@ -151,7 +151,7 @@ public class IntervalsSet extends AbstractRegion<Euclidean1D, Euclidean1D> imple
     @Override
     protected void computeGeometricalProperties() {
         if (getTree(false).getCut() == null) {
-            setBarycenter((Point<Euclidean1D>) Vector1D.NaN);
+            setBarycenter(Point1D.NaN);
             setSize(((Boolean) getTree(false).getAttribute()) ? Double.POSITIVE_INFINITY : 0);
         } else {
             double size = 0.0;
@@ -162,9 +162,9 @@ public class IntervalsSet extends AbstractRegion<Euclidean1D, Euclidean1D> imple
             }
             setSize(size);
             if (Double.isInfinite(size)) {
-                setBarycenter((Point<Euclidean1D>) Vector1D.NaN);
+                setBarycenter(Point1D.NaN);
             } else if (size >= Precision.SAFE_MIN) {
-                setBarycenter((Point<Euclidean1D>) new Vector1D(sum / size));
+                setBarycenter(new Point1D(sum / size));
             } else {
                 setBarycenter(((OrientedPoint) getTree(false).getCut().getHyperplane()).getLocation());
             }

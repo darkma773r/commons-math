@@ -409,13 +409,6 @@ public abstract class AbstractRegion<S extends Space, T extends Space> implement
     /** Set the barycenter of the instance.
      * @param barycenter barycenter of the instance
      */
-    protected void setBarycenter(final Vector<S> barycenter) {
-        setBarycenter((Point<S>) barycenter);
-    }
-
-    /** Set the barycenter of the instance.
-     * @param barycenter barycenter of the instance
-     */
     protected void setBarycenter(final Point<S> barycenter) {
         this.barycenter = barycenter;
     }

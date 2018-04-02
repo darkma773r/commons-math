@@ -357,11 +357,11 @@ public class PolyhedronsSet extends AbstractRegion<Euclidean3D, Euclidean2D> {
         // check simple cases first
         if (isEmpty()) {
             setSize(0.0);
-            setBarycenter((Point<Euclidean3D>) Vector3D.NaN);
+            setBarycenter(Point3D.NaN);
         }
         else if (isFull()) {
             setSize(Double.POSITIVE_INFINITY);
-            setBarycenter((Point<Euclidean3D>) Vector3D.NaN);
+            setBarycenter(Point3D.NaN);
         }
         else {
             // not empty or full; compute the contribution of all boundary facets
@@ -369,16 +369,16 @@ public class PolyhedronsSet extends AbstractRegion<Euclidean3D, Euclidean2D> {
             getTree(true).visit(contributionVisitor);
 
             final double size = contributionVisitor.getSize();
-            final Vector3D barycenter = contributionVisitor.getBarycenter();
+            final Point3D barycenter = contributionVisitor.getBarycenter();
 
             if (size < 0) {
                 // the polyhedrons set is a finite outside surrounded by an infinite inside
                 setSize(Double.POSITIVE_INFINITY);
-                setBarycenter((Point<Euclidean3D>) Vector3D.NaN);
+                setBarycenter(Point3D.NaN);
             } else {
                 // the polyhedrons set is finite
                 setSize(size);
-                setBarycenter((Point<Euclidean3D>) barycenter);
+                setBarycenter(barycenter);
             }
         }
     }
@@ -403,7 +403,7 @@ public class PolyhedronsSet extends AbstractRegion<Euclidean3D, Euclidean2D> {
         private double volumeSum;
 
         /** Accumulator for barycenter contributions. */
-        private Vector3D barycenterSum = Vector3D.ZERO;
+        private Point3D barycenterSum = Point3D.ZERO;
 
         /** Returns the total computed size (ie, volume) of the polyhedron.
          * This value will be negative if the polyhedron is "inside-out", meaning
@@ -420,11 +420,11 @@ public class PolyhedronsSet extends AbstractRegion<Euclidean3D, Euclidean2D> {
          * region is infinite.
          * @return the barycenter.
          */
-        public Vector3D getBarycenter() {
+        public Point3D getBarycenter() {
             // Since the volume we used when adding together the facet contributions
             // was 3x the actual pyramid size, we'll multiply by 1/4 here instead
             // of 3/4 to adjust for the actual barycenter position in each pyramid.
-            return new Vector3D(1.0 / (4 * getSize()), barycenterSum);
+            return new Point3D(1.0 / (4 * getSize()), barycenterSum);
         }
 
         /** {@inheritDoc} */
@@ -463,20 +463,20 @@ public class PolyhedronsSet extends AbstractRegion<Euclidean3D, Euclidean2D> {
 
             if (Double.isInfinite(area)) {
                 volumeSum = Double.POSITIVE_INFINITY;
-                barycenterSum = Vector3D.NaN;
+                barycenterSum = Point3D.NaN;
             } else {
                 final Plane plane = (Plane) facet.getHyperplane();
-                final Vector3D facetBarycenter = plane.toSpace(polygon.getBarycenter()).asVector();
+                final Point3D facetBarycenter = plane.toSpace(polygon.getBarycenter());
 
                 // the volume here is actually 3x the actual pyramid volume; we'll apply
                 // the final scaling all at once at the end
-                double scaledVolume = area * facetBarycenter.dotProduct(plane.getNormal());
+                double scaledVolume = area * facetBarycenter.asVector().dotProduct(plane.getNormal());
                 if (reversed) {
                     scaledVolume = -scaledVolume;
                 }
 
                 volumeSum += scaledVolume;
-                barycenterSum = new Vector3D(1.0, barycenterSum, scaledVolume, facetBarycenter);
+                barycenterSum = new Point3D(1.0, barycenterSum, scaledVolume, facetBarycenter);
             }
         }
     }
@@ -688,7 +688,7 @@ public class PolyhedronsSet extends AbstractRegion<Euclidean3D, Euclidean2D> {
         /** {@inheritDoc} */
         @Override
         public Point3D apply(final Point<Euclidean3D> point) {
-            return new Point3D(1.0, (Vector3D) point, 1.0, translation);
+            return new Point3D(1.0, (Point3D) point, 1.0, translation);
         }
 
         /** {@inheritDoc} */

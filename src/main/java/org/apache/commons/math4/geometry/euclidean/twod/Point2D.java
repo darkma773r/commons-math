@@ -17,6 +17,14 @@ public class Point2D extends Cartesian2D implements Point<Euclidean2D> {
         super(x, y);
     }
 
+    public Point2D(double[] p) {
+        super(p);
+    }
+
+    public Point2D(double a1, Point2D u1) {
+        super(a1 * u1.x, a1 * u1.y);
+    }
+
     public Point2D(double a1, Point2D u1, double a2, Point2D u2) {
         super(a1 * u1.x + a2 * u2.x,
                 a1 * u1.y + a2 * u2.y);

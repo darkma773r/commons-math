@@ -110,7 +110,7 @@ public class OrientedPoint implements Hyperplane<Euclidean1D> {
      * @since 3.3
      */
     @Override
-    public Point<Euclidean1D> project(Point<Euclidean1D> point) {
+    public Point1D project(Point<Euclidean1D> point) {
         return location;
     }
 

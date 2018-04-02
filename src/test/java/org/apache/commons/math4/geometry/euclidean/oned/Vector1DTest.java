@@ -31,7 +31,7 @@ import org.apache.commons.numbers.core.Precision;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class Cartesian1DTest {
+public class Vector1DTest {
 
     private static final double TEST_TOLERANCE = 1e-15;
 
@@ -251,7 +251,6 @@ public class Cartesian1DTest {
         Assert.assertEquals(0.0, v1.distance(v1), TEST_TOLERANCE);
 
         Assert.assertEquals(5.0, v1.distance(v2), TEST_TOLERANCE);
-        Assert.assertEquals(5.0, v1.distance((Point<Euclidean1D>) v2), TEST_TOLERANCE);
         Assert.assertEquals(5.0, v1.distance((Vector<Euclidean1D>) v2), TEST_TOLERANCE);
         Assert.assertEquals(v1.subtract(v2).getNorm(), v1.distance(v2), TEST_TOLERANCE);
 
