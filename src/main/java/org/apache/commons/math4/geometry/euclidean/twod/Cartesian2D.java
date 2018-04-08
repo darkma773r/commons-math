@@ -1,12 +1,12 @@
 package org.apache.commons.math4.geometry.euclidean.twod;
 
 import org.apache.commons.math4.exception.DimensionMismatchException;
-import org.apache.commons.math4.geometry.Cartesian;
+import org.apache.commons.math4.geometry.Coordinates;
 import org.apache.commons.math4.geometry.Space;
 import org.apache.commons.math4.geometry.euclidean.threed.Cartesian3D;
 import org.apache.commons.math4.util.FastMath;
 
-public class Cartesian2D implements Cartesian<Euclidean2D> {
+public class Cartesian2D implements Coordinates<Euclidean2D> {
 
     protected final double x;
     protected final double y;

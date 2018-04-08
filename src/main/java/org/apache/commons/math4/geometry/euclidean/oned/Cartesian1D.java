@@ -1,10 +1,10 @@
 package org.apache.commons.math4.geometry.euclidean.oned;
 
-import org.apache.commons.math4.geometry.Cartesian;
+import org.apache.commons.math4.geometry.Coordinates;
 import org.apache.commons.math4.geometry.Space;
 import org.apache.commons.math4.util.FastMath;
 
-public class Cartesian1D implements Cartesian<Euclidean1D> {
+public class Cartesian1D implements Coordinates<Euclidean1D> {
 
     protected final double x;
 

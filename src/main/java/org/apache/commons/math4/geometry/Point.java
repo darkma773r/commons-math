@@ -22,7 +22,7 @@ package org.apache.commons.math4.geometry;
  * @see Vector
  * @since 3.3
  */
-public interface Point<S extends Space> extends Cartesian<S> {
+public interface Point<S extends Space> extends Coordinates<S> {
 
     /** Compute the distance between the instance and another point.
      * @param p second point

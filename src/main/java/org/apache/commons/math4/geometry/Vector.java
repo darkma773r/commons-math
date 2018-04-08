@@ -26,7 +26,7 @@ import org.apache.commons.math4.exception.MathArithmeticException;
  * @see Point
  * @since 3.0
  */
-public interface Vector<S extends Space> extends Cartesian<S> {
+public interface Vector<S extends Space> extends Coordinates<S> {
 
     Point<S> asPoint();
 

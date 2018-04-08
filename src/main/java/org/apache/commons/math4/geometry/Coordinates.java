@@ -2,7 +2,7 @@ package org.apache.commons.math4.geometry;
 
 import java.io.Serializable;
 
-public interface Cartesian<S extends Space> extends Serializable {
+public interface Coordinates<S extends Space> extends Serializable {
 
     /** Get the space to which the coordinates belong.
      * @return containing space
